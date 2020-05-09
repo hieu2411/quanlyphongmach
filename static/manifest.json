@@ -1,0 +1,22 @@
+﻿{
+  "name": "Progressive Web App",
+  "short_name": "PWA",
+  "description": "Creating PWA in ASP.NET Core.",
+  "icons": [
+    {
+      "src": "/images/icon192x192.jpg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/assets/images/logo/logo.png",
+      "sizes": "142x32"
+    },
+    {
+      "src": "/images/icon512x512.png",
+      "sizes": "512x512"
+    }
+    
+  ],
+  "display": "standalone",
+  "start_url": "/"
+}

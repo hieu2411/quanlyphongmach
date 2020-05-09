@@ -1,0 +1,24 @@
+﻿<div class="content">
+    <a class="js-acc-btn" href="">@(User.Identity.Name ?? "User")!</a>
+</div>
+<div class="account-dropdown js-dropdown">
+    <div class="info clearfix">
+        <div class="image">
+            <a href="#">
+                <img src="~/images/icon/avatar-01.jpg" alt="John Doe" />
+            </a>
+        </div>
+        <div class="content">
+            <h5 class="name">
+                <a>@(User.Identity.Name ?? "User")!</a>
+            </h5>
+            <span class="email">@(User.Identity.Name ?? "User")!</span>
+        </div>
+    </div>
+    <div class="account-dropdown__footer">
+        <a asp-area="" asp-controller="HomePage" asp-action="Index"><i class="zmdi zmdi-home"></i>Trang chủ</a>
+    </div>
+    <div class="account-dropdown__footer">
+        <a asp-area="Admin" asp-controller="Home" asp-action="Logout"><i class="zmdi zmdi-power"></i>Logout</a>
+    </div>
+</div>

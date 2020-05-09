@@ -1,0 +1,43 @@
+﻿.banner {
+    /* The image used */
+    /*background-image: url("../images/Banner/banner2.jpg");*/
+    /* Full height */
+    width: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+img {
+    width: 100%;
+}
+
+.Home-page {
+    margin-top: 2%;
+}
+
+a {
+    color: inherit;
+}
+
+    a:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+@media screen and (max-width: 768px) {
+    h2, p, aside {
+        text-align: center;
+    }
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-holder {
+    margin-left: 30%;
+}

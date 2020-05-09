@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DoAn1</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+        <link rel="stylesheet" href="~/css/base.css" />
+        <link rel="stylesheet" href="~/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/responsive.css" />
+        <link rel="stylesheet" href="~/css/style.css" />
+        <link rel="stylesheet" href="~/css/colors/green.css" />
+
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.0.0/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <div id="wrapper">
+
+        <header>
+            <div class="container">
+                <div class="sixteen columns">
+
+                    <!-- Logo -->
+                    <div id="logo">
+                        <h1><a href="~/"><img src="~/logo.png" alt="Work" /></a></h1>
+                    </div>
+
+                    <!-- Menu -->
+                    <nav id="navigation" class="menu">
+                        <ul id="responsive">
+
+                            <li>
+                                <a href="~/">Trang chủ</a>
+                                <ul>
+                                    <li><a href="~/Admin/Home">Admin</a></li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href="#">Cổng thông tin</a>
+                                <ul>
+                                    <li><a href="job-page.html">Job Page</a></li>
+                                    <li><a href="job-page-alt.html">Job Page Alternative</a></li>
+
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href="#">Người tìm việc</a>
+                                <ul>
+                                    <li><a href="browse-jobs.html">Browse Jobs</a></li>
+                                    <li><a href="browse-categories.html">Browse Categories</a></li>
+                                    <li><a href="add-resume.html">Add Resume</a></li>
+                                    <li><a href="manage-resumes.html">Manage Resumes</a></li>
+                                    <li><a href="job-alerts.html">Job Alerts</a></li>
+                                </ul>
+                            </li>
+
+
+                        </ul>
+                        <ul class="responsive float-right" style="margin-right:-80px;">
+
+                            @await Html.PartialAsync("_AccountDropDown")
+                        </ul>
+
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <partial name="_CookieConsentPartial" />
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <div class="margin-top-30"></div>
+        <div id="footer">
+            <div class="container">
+                <div class="footer-bottom">
+                    <div class="sixteen columns">
+                        <h4>Follow Us</h4>
+                        <ul class="social-icons">
+                            <li><a class="facebook" href="#"><i class="icon-facebook"></i></a></li>
+                            <li><a class="twitter" href="#"><i class="icon-twitter"></i></a></li>
+                            <li><a class="gplus" href="#"><i class="icon-gplus"></i></a></li>
+                            <li><a class="linkedin" href="#"><i class="icon-linkedin"></i></a></li>
+                        </ul>
+                        <div class="copyrights">©  Copyright 2015 by <a href="#">Work Scout</a>. All Rights Reserved.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.0.0/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>
