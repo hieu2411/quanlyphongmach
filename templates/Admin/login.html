@@ -1,0 +1,43 @@
+{% extends "Admin/layout_admin.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="post">
+                <h4>Login</h4>
+                <br>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="username" aria-describedby="emailHelp"
+                           placeholder="Username or Email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password" aria-describedby="emailHelp"
+                           placeholder="Password"
+                    >
+                </div>
+                <button type="submit" class="btn btn-default btn-success">
+                    Login
+                </button>
+
+{#                <button type="submit" class="btn btn-default">#}
+{#                    Back#}
+{#                </button>#}
+
+            </form>
+        </div>
+        <div class="col-md-8">
+        </div>
+    </div>
+{% endblock %}
