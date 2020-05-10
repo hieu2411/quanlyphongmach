@@ -1,0 +1,39 @@
+﻿{% extends "Admin/layout_admin.html" %}
+{% block content %}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenThuoc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaoCaoSuDungThuocs)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenThuoc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaoCaoSuDungThuocs.BaoCaoID)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ThuocID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ThuocID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ThuocID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+{% endblock %}

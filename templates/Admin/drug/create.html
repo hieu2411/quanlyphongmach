@@ -1,0 +1,44 @@
+﻿{% extends "admin/layout_admin.html" %}
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Create</h2>
+
+    <h4>Thuoc</h4>
+    <hr/>
+    <div class="row">
+        <div class="col-md-4">
+            <form action="{{ url_for('create_drug') }}" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
+                           placeholder="Drug name">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="effect" aria-describedby="emailHelp"
+                           placeholder="Effects">
+                </div>
+                <button type="submit" class="btn btn-default btn-success">
+                    Add
+                </button>
+                <br>
+
+            </form>
+            <div style="margin-top: 10px">
+                <a href="{{ url_for('drug_index') }}">Back to List</a>
+            </div>
+        </div>
+
+    </div>
+
+
+
+{% endblock %}

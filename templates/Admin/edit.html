@@ -1,47 +1,52 @@
-{% extends 'Admin/layout_admin.html' %}
+{% extends 'admin/layout_admin.html' %}
 {% block content %}
-<h2>title</h2>
-<div class="row">
-    <div class="col-md-4">
+    <h2>title</h2>
+    <div class="row">
+        <div class="col-md-8">
+            {% if data is not none %}
+                <form action="{{ url_for('admin_edit', id =data.id) }}" method="post">
 
-        <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <h4>Edit account.</h4>
+                    <hr/>
 
-            <h4>Create a new account.</h4>
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
+                    <dl class="row">
+                        <dt class="col-sm-3">Email</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="email" class="form-control" name="email" aria-describedby="emailHelp"
+                                   value="{{ data.email }}">
+                        </div>
 
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" value="@users.Email"/>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Type"></label>
-                <select asp-for="Type" class="form-control">
-{#                    @foreach (var item in Model.RoleTypes)#}
-{#                    {#}
-{##}
-{#                        if (item.Text ==  RoleOfUser[0])#}
-{#                        {#}
-{#                            <option value="@item.Value" selected="selected">@item.Text</option>#}
-{#                        }#}
-{#                        else#}
-{#                        {#}
-{#                            <option value="@item.Value">@item.Text</option>#}
-{#                        }#}
+                        <dt class="col-sm-3">Fullname</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="text" class="form-control" name="fullname" aria-describedby="emailHelp"
+                                   value="{{ data.fullname }}">
+                        </div>
 
-{#                    }#}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-default">
-                Back
-            </button>
-            <button type="submit" class="btn btn-default btn-success">
-                Edit
-            </button>
-        </form>
+                        <dt class="col-sm-3">Mobile number</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="text" class="form-control" name="mobile" aria-describedby="emailHelp"
+                                   value="{{ data.mobile }}">
+                        </div>
+                    </dl>
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" name="id" aria-describedby="emailHelp"
+                               value="{{ data.id }}">
+                    </div>
+
+
+                    <button type="submit" class="btn btn-default btn-success">
+                        Edit
+                    </button>
+                    <a href="{{ url_for('admin_index') }}" class="btn btn-default">
+                        Back
+                    </a>
+                </form>
+            {% else %}
+                <a href="{{ url_for('admin_index') }}" class="btn btn-default">
+                    Back
+                </a>
+            {% endif %}
+        </div>
     </div>
-    <div class="col-md-8">
     </div>
-</div>
 {% endblock %}

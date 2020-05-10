@@ -1,4 +1,4 @@
-{% extends "admin/layout_admin.html" %}
+{% extends "Admin/layout_admin.html" %}
 {% block content %}
     <h2>{{ user.username }}</h2>
     <div class="row">
@@ -19,22 +19,27 @@
                 <br>
                 <div class="form-group">
                     <input type="text" class="form-control" name="username" aria-describedby="emailHelp"
-                           placeholder="Username">
+                           placeholder="Username"
+                    >
                 </div>
 
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" aria-describedby="emailHelp"
-                           placeholder="Password">
+                           placeholder="Password"
+                    >
                 </div>
 
                 <div class="form-group">
                     <input type="text" class="form-control" name="mobile" aria-describedby="emailHelp"
-                           placeholder="Mobile phone number">
+                           placeholder="Mobile phone number"
+
+                    >
                 </div>
 
                 <div class="form-group">
                     <input type="text" class="form-control" name="fullname" aria-describedby="emailHelp"
-                           placeholder="Full name">
+                           placeholder="Full name"
+                    >
                 </div>
                 {% if user.role != 'user' %}
                     <select class="form-control" name="role">

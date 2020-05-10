@@ -1,0 +1,47 @@
+{% extends 'Admin/layout_admin.html' %}
+{% block content %}
+<h2>title</h2>
+<div class="row">
+    <div class="col-md-4">
+
+        <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+
+            <h4>Create a new account.</h4>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" value="@users.Email"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type"></label>
+                <select asp-for="Type" class="form-control">
+{#                    @foreach (var item in Model.RoleTypes)#}
+{#                    {#}
+{##}
+{#                        if (item.Text ==  RoleOfUser[0])#}
+{#                        {#}
+{#                            <option value="@item.Value" selected="selected">@item.Text</option>#}
+{#                        }#}
+{#                        else#}
+{#                        {#}
+{#                            <option value="@item.Value">@item.Text</option>#}
+{#                        }#}
+
+{#                    }#}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">
+                Back
+            </button>
+            <button type="submit" class="btn btn-default btn-success">
+                Edit
+            </button>
+        </form>
+    </div>
+    <div class="col-md-8">
+    </div>
+</div>
+{% endblock %}

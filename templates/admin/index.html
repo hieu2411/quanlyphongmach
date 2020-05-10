@@ -1,4 +1,4 @@
-{% extends 'admin/layout_admin.html' %}
+{% extends 'Admin/layout_admin.html' %}
 {% block content %}
 
     {% with messages = get_flashed_messages() %}
@@ -22,7 +22,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Is Active</th>
+            <th>Active</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -40,15 +40,15 @@
 
                 <td>
 
-                    {#                    <a asp-area="admin" class="btn btn-sm btn-primary" asp-controller="admin" asp-action="Details"asp-route-id="@i">#}
+                    {#                    <a asp-area="Admin" class="btn btn-sm btn-primary" asp-controller="Admin" asp-action="Details"asp-route-id="@i">#}
                     {##}
                     {#                    Detail <span class="glyphicon glyphicon-th-list"></span>#}
                     {##}
-                    {#                    </a><a class="btn btn-sm btn-info" asp-controller="admin" asp-action="Edit" asp-route-id="@i">#}
+                    {#                    </a><a class="btn btn-sm btn-info" asp-controller="Admin" asp-action="Edit" asp-route-id="@i">#}
                     {##}
                     {#                    Edit <span class="glyphicon glyphicon-pencil"></span>#}
                     {##}
-                    {#                    </a><a class="btn btn-sm btn-danger" asp-controller="admin" asp-action="Delete" asp-route-id="@i">#}
+                    {#                    </a><a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="Delete" asp-route-id="@i">#}
                     {##}
                     {#                    Delete <span class="glyphicon glyphicon-pencil"></span>#}
                     {##}

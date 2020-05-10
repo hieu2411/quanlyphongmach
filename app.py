@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///phongmach.db'
 db = SQLAlchemy(app)
+level = ['user', 'moderator', 'admin']
 
 
 class User(db.Model):
@@ -106,6 +107,52 @@ class User(db.Model):
             db.session.rollback()
             return False
 
+    @classmethod
+    def deactivate(cls, user_id):
+        user = User.query.get(user_id)
+        user.is_active = False
+        db.session.commit()
+        return True
+
+class Drug(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "drug"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(125), nullable=False)
+    effect = db.Column(db.String(125))
+
+    def __repr__(self):
+        return "<drug '{}'>".format(self.name)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'effect': self.effect
+        }
+
+    @classmethod
+    def create(cls, name, effect=''):
+        drug = Drug(
+            name=name,
+            effect=effect
+        )
+        db.session.add(drug)
+        db.session.commit()
+        drug.password = ''
+        return drug
+
+    @classmethod
+    def delete(cls, drug_id):
+        try:
+            Drug.query.filter_by(id=drug_id).delete()
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            return False
+
 
 @app.route('/')
 @app.route('/index')
@@ -114,6 +161,8 @@ def homepage():
     return render_template('Homepage.html')
 
 
+# can be used for user login too ... working
+@app.route('/login', methods=['GET', 'POST'])
 @app.route('/admin/login', methods=['GET', 'POST'])
 def login():
     # check if this is the first launch then allow to login with 'admin' 'admin'
@@ -136,16 +185,17 @@ def login():
         # wrong login information
         if result == None:
             flash('Incorrect username or password')
-            return render_template('Admin/login.html')
+            return render_template('admin/login.html')
 
         # successful
         session['signed_in'] = True
         session['username'] = result.username
         flash('You were successfully signed in')
         return redirect('index')
-    return render_template('Admin/login.html')
+    return render_template('admin/login.html')
 
 
+# can be used to sign up for normal user too ... working
 @app.route('/admin/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -161,12 +211,12 @@ def register():
     # if current logging in user's role is admin then allow to create more admin and moderator, otherwise only allow to create moderator
     if session.get('signed_in'):
         user = User.get(session.get('username'))
-        return render_template('Admin/register.html', user=user)
-    return render_template('Admin/register.html', title='Login')
+        return render_template('admin/register.html', user=user)
+    return render_template('admin/register.html', title='Login')
 
 
 @app.route('/admin/index')
-def index():
+def admin_index():
     # check if signed in then show lower users list
     if session.get('signed_in'):
         user = User.get(session.get('username'))
@@ -175,8 +225,9 @@ def index():
                 data = user.query.all()
             if user.role == 'moderator':
                 data = User.query.filter(User.role == 'user' or User.role == 'moderator').all()
-            return render_template('Admin/index.html', users=data)
+            return render_template('admin/index.html', users=data)
     return redirect('homepage')
+
 
 @app.route('/logout')
 @app.route('/admin/logout')
@@ -190,20 +241,93 @@ def logout():
     return redirect('/index')
 
 
-@app.route('/admin/edit')
-def edit():
-    return render_template('Admin/edit.html')
+@app.route('/admin/edit/<id>', methods=['GET', 'POST'])
+def admin_edit(id):
+    user = User.query.get(id)
+
+    if user:
+
+        if lower_level(user):
+            return render_template('admin/index.html')
+
+        if request.method == 'POST':
+            update_data = {'id': request.form['id'],
+                           'email': request.form['email'],
+                           'fullname': request.form['fullname'],
+                           'mobile': request.form['mobile'],
+                           }
+            User.update(data=update_data)
+            return redirect('/admin/index')
+        # show info first
+        return render_template('admin/edit.html', data=user.as_dict())
+
+    return render_template('admin/edit.html', data=None)
 
 
-@app.route('/admin/delete')
-def delete():
-    return render_template('Admin/delete.html')
+@app.route('/admin/details/<id>')
+def admin_details(id):
+    # find that user by id
+    user = User.query.get(id)
+    if user:
+        if lower_level(user):
+            return render_template('admin/details.html', data=None)
+
+        # in jinja use items() to unpack key and value from dict
+        return render_template('admin/details.html', data=user.as_dict())
+    flash('User not found')
+    return render_template('admin/details.html', data=None)
 
 
-@app.route('/admin/details')
-def details():
-    return render_template('Admin/details.html')
+@app.route('/admin/delete/<id>', methods = ['GET','POST'])
+def admin_delete(id):
+    # won't delete, only change is_Active to False
 
+    # find user with id
+    user = User.get(id)
+    if request.method == 'POST':
+        User.deactivate(id)
+        return redirect('/admin/index')
+    if user:
+        if lower_level(user):
+            return render_template('admin/index.html')
+        return render_template('admin/delete.html', data = user.as_dict())
+    # need some more code for confirmation
+
+    return render_template('admin/delete.html', data = None)
+
+
+def lower_level(user):
+    # if that user level is higher than not allow to make action
+    # if current user's level is higher then return False
+    current_user = User.get(session.get('username'))
+    if level.index(current_user.role) < level.index(user.role):
+        flash('You cannot access to this user information due to higher level')
+        return True
+    return False
+
+
+@app.route('/admin/drug/index')
+def drug_index():
+    # check if signed in then show lower users list
+    if session.get('signed_in'):
+        data = Drug.query.all()
+        return render_template('admin/drug/index.html', drugs=data)
+    return redirect('homepage')
+
+
+@app.route('/admin/drug/create', methods=['GET', 'POST'])
+def create_drug():
+    # check if signed in then show lower users list
+    if session.get('signed_in'):
+        test = request.method
+        if request.method == 'POST':
+            result = Drug.create(name=request.form['name'],
+                                 effect=request.form['effect'])
+            if result is not None:
+                flash('Successfully added new drug')
+                render_template('admin/drug/create.html')
+        return render_template('admin/drug/create.html')
+    return redirect('/admin/login')
 
 
 # def take_apopointment():
@@ -215,14 +339,25 @@ def details():
 # #     # if not ...
 
 # just for testing
-@app.route('/admin/showalluser')
+@app.route('/admin/showall')
 def show_all_user():
     users = User.query.all()
     result = []
     for user in users:
         result.append(user.as_dict())
-    result.append({'length':len(result)})
+    result.append({'length': len(result)})
     return jsonify(result)
+
+
+@app.route('/admin/drug/showall')
+def show_all_drug():
+    drugs = Drug.query.all()
+    result = []
+    for drug in drugs:
+        result.append(drug.as_dict())
+    result.append({'length': len(result)})
+    return jsonify(result)
+
 
 db.create_all()
 if __name__ == '__main__':
