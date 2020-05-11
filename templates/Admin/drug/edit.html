@@ -1,34 +1,47 @@
-﻿{% extends "admin/layout_admin.html" %}
+{% extends 'admin/layout_admin.html' %}
 {% block content %}
+    <h2>title</h2>
+    <div class="row">
+        <div class="col-md-8">
+            {% if data is not none %}
+                <form action="{{ url_for('drug_edit', id =data.id) }}" method="post">
 
-<h2>Edit</h2>
+                    <h4>Edit account.</h4>
+                    <hr/>
 
-<h4>Thuoc</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ThuocID" />
-            <div class="form-group">
-                <label asp-for="TenThuoc" class="control-label"></label>
-                <input asp-for="TenThuoc" class="form-control" />
-                <span asp-validation-for="TenThuoc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BaoCaoSuDungThuocID" class="control-label"></label>
-                <select asp-for="BaoCaoSuDungThuocID" class="form-control" asp-items="ViewBag.BaoCaoSuDungThuocID"></select>
-                <span asp-validation-for="BaoCaoSuDungThuocID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </form>
+                    <dl class="row">
+                        <dt class="col-sm-3">Drug name</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
+                                   value="{{ data.name }}">
+                        </div>
+
+
+                        <dt class="col-sm-3">Effects</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="text" class="form-control" name="effect" aria-describedby="emailHelp"
+                                   value="{{ data.effect }}">
+                        </div>
+                    </dl>
+{#                    <div class="form-group">#}
+{#                        <input type="hidden" class="form-control" name="id" aria-describedby="emailHelp"#}
+{#                               value="{{ data.id }}">#}
+{#                    </div>#}
+
+
+                    <button type="submit" class="btn btn-default btn-success">
+                        Edit
+                    </button>
+                    <a href="{{ url_for('drug_index') }}" class="btn btn-default">
+                        Back
+                    </a>
+                </form>
+            {% else %}
+                <a href="{{ url_for('drug_index') }}" class="btn btn-default">
+                    Back
+                </a>
+            {% endif %}
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+    </div>
 {% endblock %}

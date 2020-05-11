@@ -114,6 +114,7 @@ class User(db.Model):
         db.session.commit()
         return True
 
+
 class Drug(db.Model):
     """ User Model for storing user related details """
     __tablename__ = "drug"
@@ -152,6 +153,24 @@ class Drug(db.Model):
         except Exception as e:
             db.session.rollback()
             return False
+
+    @classmethod
+    def update(cls, data):
+        try:
+            drug_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    drug_data[key] = data[key]
+            if 'id' not in drug_data:
+                drug = Drug.query.filter_by(name=drug_data.get('name'))
+                drug.update(drug_data)
+            else:
+                drug = Drug.query.filter_by(id=drug_data.get('id'))
+                drug.update(drug_data)
+            db.session.commit()
+            return Drug.query.get(drug_data['id']).as_dict()
+        except:
+            return None
 
 
 @app.route('/')
@@ -251,7 +270,7 @@ def admin_edit(id):
             return render_template('admin/index.html')
 
         if request.method == 'POST':
-            update_data = {'id': request.form['id'],
+            update_data = {'id': id,
                            'email': request.form['email'],
                            'fullname': request.form['fullname'],
                            'mobile': request.form['mobile'],
@@ -270,15 +289,15 @@ def admin_details(id):
     user = User.query.get(id)
     if user:
         if lower_level(user):
-            return render_template('admin/details.html', data=None)
+            return render_template('admin/detail.html', data=None)
 
         # in jinja use items() to unpack key and value from dict
-        return render_template('admin/details.html', data=user.as_dict())
+        return render_template('admin/detail.html', data=user.as_dict())
     flash('User not found')
-    return render_template('admin/details.html', data=None)
+    return render_template('admin/detail.html', data=None)
 
 
-@app.route('/admin/delete/<id>', methods = ['GET','POST'])
+@app.route('/admin/delete/<id>', methods=['GET', 'POST'])
 def admin_delete(id):
     # won't delete, only change is_Active to False
 
@@ -290,20 +309,10 @@ def admin_delete(id):
     if user:
         if lower_level(user):
             return render_template('admin/index.html')
-        return render_template('admin/delete.html', data = user.as_dict())
+        return render_template('admin/delete.html', data=user.as_dict())
     # need some more code for confirmation
 
-    return render_template('admin/delete.html', data = None)
-
-
-def lower_level(user):
-    # if that user level is higher than not allow to make action
-    # if current user's level is higher then return False
-    current_user = User.get(session.get('username'))
-    if level.index(current_user.role) < level.index(user.role):
-        flash('You cannot access to this user information due to higher level')
-        return True
-    return False
+    return render_template('admin/delete.html', data=None)
 
 
 @app.route('/admin/drug/index')
@@ -330,13 +339,60 @@ def create_drug():
     return redirect('/admin/login')
 
 
-# def take_apopointment():
-# #     # if loged in ...
-# #     if session['signed_in']:
-# #         ...
-# #     else:
-# #         return redirect('/signup')
-# #     # if not ...
+@app.route('/admin/drug/details/<id>', methods=['get', 'post'])
+def drug_details(id):
+    # find that user by id
+    drug = Drug.query.get(id)
+    if drug:
+        # in jinja use items() to unpack key and value from dict
+        return render_template('admin/drug/detail.html', data=drug.as_dict())
+    flash('Drug not found')
+    return render_template('admin/drug/detail.html', data=None)
+
+
+
+@app.route('/admin/drug/edit/<id>', methods=['GET', 'POST'])
+def drug_edit(id):
+    drug = Drug.query.get(id)
+
+    if drug:
+        if request.method == 'POST':
+            update_data = {'id': id,
+                           'name':request.form['name'],
+                           'effect':request.form['effect']
+                           }
+            Drug.update(data=update_data)
+            return redirect('/admin/drug/index')
+        # show info first
+        return render_template('admin/drug/edit.html', data=drug.as_dict())
+
+    return render_template('admin/drug/edit.html', data=None)
+
+@app.route('/admin/drug/delete/<id>', methods=['GET', 'POST'])
+def drug_delete(id):
+    # won't delete, only change is_Active to False
+
+    # find user with id
+    drug = Drug.query.get(id)
+    if request.method == 'POST':
+        Drug.delete(id)
+        return redirect('/admin/drug/index')
+    if drug:
+        return render_template('admin/drug/delete.html', data=drug.as_dict())
+    # need some more code for confirmation
+
+    return render_template('admin/drug/delete.html', data=None)
+
+
+def lower_level(user):
+    # if that user level is higher than not allow to make action
+    # if current user's level is higher then return False
+    current_user = User.get(session.get('username'))
+    if level.index(current_user.role) < level.index(user.role):
+        flash('You cannot access to this user information due to higher level')
+        return True
+    return False
+
 
 # just for testing
 @app.route('/admin/showall')
