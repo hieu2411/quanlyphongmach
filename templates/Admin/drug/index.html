@@ -16,11 +16,11 @@
             <th>
                 Effects
             </th>
-            <th></th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
-        {% for drug in drugs %}
+        {% for drug in data %}
             <tr>
                 <td>
                     {{ drug.id }}
@@ -32,13 +32,25 @@
                     {{ drug.effect }}
                 </td>
                 <td>
-                    {#                <a asp-action="Edit" asp-route-id="@item.ThuocID">Edit</a> |#}
-                    {#                <a asp-action="Details" asp-route-id="@item.ThuocID">Details</a> |#}
-                    {#                <a asp-action="Delete" asp-route-id="@item.ThuocID">Delete</a>#}
+                    <a href="{{ url_for('drug_edit', id = drug.id) }}">Edit</a> |
+                    <a href="{{ url_for('drug_details', id = drug.id) }}">Detail</a> |
+                    <a href="{{ url_for('drug_delete', id = drug.id) }}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
 
         </tbody>
     </table>
+
+
+{#   <form action="/action_page.php">#}
+{#  <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">#}
+{#  <label for="vehicle1"> I have a bike</label><br>#}
+{#  <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">#}
+{#  <label for="vehicle2"> I have a car</label><br>#}
+{#  <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">#}
+{#  <label for="vehicle3"> I have a boat</label><br><br>#}
+{#  <input type="submit" value="Submit">#}
+{#</form>#}
+
 {% endblock %}

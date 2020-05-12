@@ -1,0 +1,52 @@
+﻿@model CNPMNC.Data.Models.HoaDon
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>HoaDon</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.BenhNhan)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BenhNhan.BenhNhanID)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NgayKham)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NgayKham)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TienKham)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TienKham)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TienThuoc)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TienThuoc)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BaoCaoDoanhThu)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BaoCaoDoanhThu.BaoCaoID)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="HoaDonID" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

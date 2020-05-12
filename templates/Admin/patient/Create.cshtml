@@ -1,0 +1,41 @@
+﻿@model CNPMNC.Data.Models.DSBenhNhan
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutAdmin.cshtml";
+
+}
+
+<div class="row" style="float:right"><a asp-area="QuanLy" asp-controller="QuanLyChung" asp-action="index"><img src="~/images/icon/cancel.png" /></a></div>
+
+<div class="container" style="text-align:center">
+    <h1>Thêm bệnh nhân</h1>
+
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BenhNhanID" class="control-label">Bệnh nhân</label>
+                <select id="BenhNhanID" asp-for="BenhNhanID" class="form-control" asp-items="ViewBag.BenhNhanID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="LoaiBenhID" class="control-label">Loại bệnh</label>
+                <select asp-for="LoaiBenhID" class="form-control" asp-items="ViewBag.LoaiBenhID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TrieuChung" class="control-label">Triệu chứng</label>
+                <input asp-for="TrieuChung" class="form-control" />
+                <span asp-validation-for="TrieuChung" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

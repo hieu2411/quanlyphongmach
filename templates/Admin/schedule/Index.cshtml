@@ -1,0 +1,92 @@
+﻿@model IEnumerable<CNPMNC.Data.Models.DSKhamBenh>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutAdmin.cshtml";
+    List<Tuple<int, List<CNPMNC.Data.Models.BenhNhan>>> ListBenhNhan = ViewBag.listBenhNhan;
+    int i = -1;
+    int stt = 0;
+}
+
+<div class="row" style="float:right"><a asp-area="QuanLy" asp-controller="QuanLyChung" asp-action="index"><img src="~/images/icon/cancel.png" /></a></div>
+
+<div class="container" style="text-align:center">
+    <h1>Danh sách khám bệnh</h1>
+
+</div>
+
+<p>
+    <a asp-area="QuanLy" asp-controller="DSKhamBenhs" asp-action="Create">Thêm danh sách</a>
+
+</p>
+<br />
+<br />
+@foreach (var item in Model)
+{
+    i++;
+    <div class="row container">
+        <div class="col-sm-2">Ngày khám<br />@item.NgayKham.Date.ToShortDateString()</div>
+        <div class="col-8">
+            <div style="float:right">
+                <a asp-action="Edit" asp-route-id="@item.DSKhamBenhID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.DSKhamBenhID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.DSKhamBenhID">Delete</a>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row container">
+        <div class="col-sm-1">STT</div>
+        <div class="col-sm-2">Họ tên</div>
+        <div class="col-sm-2">Giới tính</div>
+        <div class="col-sm-2">Năm sinh</div>
+        <div class="col-sm-2">Địa chỉ</div>
+    </div>
+    @foreach (var item2 in ListBenhNhan)
+    {
+        stt = 0;
+
+        @if (item2.Item1 == item.DSKhamBenhID)
+        {
+            if (item2.Item2.Count !=0)
+            {
+                foreach (var item3 in item2.Item2)
+                {
+
+                    <div class="row container">
+                        <div class="col-sm-1">@(++stt)</div>
+                        <div class="col-sm-2">@item3.HoTen</div>
+                        <div class="col-sm-2">@item3.GioiTinh</div>
+                        <div class="col-sm-2">@item3.NgaySinh.ToShortDateString()</div>
+                        <div class="col-sm-2">@item3.DiaChi</div>
+                        <div class="col-sm-3">
+                            <div style="float:right">
+                                <a asp-action="DeleteBenhNhan" asp-route-id="@item3.BenhNhanID">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            }
+            else
+            {
+                <div class="row container">
+                    <div class="col-sm-12">Trống vắng chiều nay :(</div>                 
+                    
+                </div>
+            }
+
+
+
+        }
+
+    }
+    <br />
+    <div class="row" style="height:10px;background-color:red">
+
+    </div>
+    <br />
+}
+
+

@@ -1,0 +1,42 @@
+﻿@model IEnumerable<CNPMNC.Data.Models.CachDung>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenCachDung)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaoCaoSuDungThuoc)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenCachDung)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaoCaoSuDungThuoc.BaoCaoID)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CachDungID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CachDungID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CachDungID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

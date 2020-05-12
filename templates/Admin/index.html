@@ -40,19 +40,9 @@
 
                 <td>
 
-                    {#                    <a asp-area="admin" class="btn btn-sm btn-primary" asp-controller="admin" asp-action="Details"asp-route-id="@i">#}
-                    {##}
-                    {#                    Detail <span class="glyphicon glyphicon-th-list"></span>#}
-                    {##}
-                    {#                    </a><a class="btn btn-sm btn-info" asp-controller="admin" asp-action="Edit" asp-route-id="@i">#}
-                    {##}
-                    {#                    Edit <span class="glyphicon glyphicon-pencil"></span>#}
-                    {##}
-                    {#                    </a><a class="btn btn-sm btn-danger" asp-controller="admin" asp-action="Delete" asp-route-id="@i">#}
-                    {##}
-                    {#                    Delete <span class="glyphicon glyphicon-pencil"></span>#}
-                    {##}
-                    {#                    </a></td> #}
+                    <a href="{{ url_for('admin_edit', id = user.id) }}">Edit</a> |
+                    <a href="{{ url_for('admin_details', id = user.id) }}">Detail</a> |
+                    <a href="{{ url_for('admin_delete', id = user.id) }}">Delete</a>
                 </tr>
             {% endfor %}
 

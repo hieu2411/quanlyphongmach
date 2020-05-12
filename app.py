@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from flask import Flask, request, flash, session, redirect, jsonify
 from flask.templating import *
@@ -11,6 +12,7 @@ db = SQLAlchemy(app)
 level = ['user', 'moderator', 'admin']
 
 
+# region model
 class User(db.Model):
     """ User Model for storing user related details """
     __tablename__ = "user"
@@ -42,17 +44,18 @@ class User(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
             'last_login': self.last_login.strftime('%Y-%m-%d %H:%M:%S'),
+            'password': self.password
         }
 
     @classmethod
     def get(cls, username, email=''):
         user = User.query.filter(username == username or email == email).first()
         if user is not None:
-            user.password = ''
-        return user
+            return user
+        return None
 
     @classmethod
-    def create(cls, username, fullname, password, mobile, role='user'):
+    def create(cls, username, fullname, password, mobile, role='user', email=None):
         user = User(
             username=username,
             fullname=fullname,
@@ -66,14 +69,12 @@ class User(db.Model):
         )
         db.session.add(user)
         db.session.commit()
-        user.password = ''
         return user
 
     @classmethod
     def login(cls, username, password, email=''):
         user = User.query.filter(username == username or email == email).first()
         if user.password == password:
-            user.password = ''
             return user
         else:
             return None
@@ -121,6 +122,7 @@ class Drug(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(125), nullable=False)
+    price = db.Column(db.Float, nullable=False)
     effect = db.Column(db.String(125))
 
     def __repr__(self):
@@ -131,17 +133,18 @@ class Drug(db.Model):
             'id': self.id,
             'name': self.name,
             'effect': self.effect
+            , 'price': self.price
         }
 
     @classmethod
-    def create(cls, name, effect=''):
+    def create(cls, name, effect='', price=0):
         drug = Drug(
             name=name,
             effect=effect
+            , price=price
         )
         db.session.add(drug)
         db.session.commit()
-        drug.password = ''
         return drug
 
     @classmethod
@@ -173,6 +176,298 @@ class Drug(db.Model):
             return None
 
 
+class Patient(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "patient"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    account_id = db.Column(db.Integer, nullable=True)
+    name = db.Column(db.String(125), nullable=False)
+    sickness_id = db.Column(db.Integer, nullable=False)
+    symptom_id = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return "<patient '{}'>".format(self.name)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'sickness_id': self.sickness_id,
+            'symptom_id': self.symptom_id,
+            'account_id': self.account_id
+        }
+
+    @classmethod
+    def create(cls, name, sickness_id, symptom_id):
+        patient = Patient(
+            name=name,
+            sickness_id=sickness_id,
+            symptom_id=symptom_id
+        )
+        db.session.add(patient)
+        db.session.commit()
+        return patient
+
+    # @classmethod
+    # def delete(cls, patient_id):
+    #     try:
+    #         Patient.query.filter_by(id=patient_id).delete()
+    #         db.session.commit()
+    #         return True
+    #     except Exception as e:
+    #         db.session.rollback()
+    #         return False
+
+    @classmethod
+    def update(cls, data):
+        try:
+            patient_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    patient_data[key] = data[key]
+            if 'id' not in patient_data:
+                patient = Patient.query.filter_by(name=patient_data.get('name'))
+                patient.update(patient_data)
+            else:
+                patient = Patient.query.filter_by(id=patient_data.get('id'))
+                patient.update(patient_data)
+            db.session.commit()
+            return Patient.query.get(patient_data['id']).as_dict()
+        except:
+            return None
+
+
+class Symptom(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "symptom"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    symptom = db.Column(db.String(125), nullable=False)
+
+    def __repr__(self):
+        return "<symptom '{}'>".format(self.symptom)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'symptom': self.symptom,
+        }
+
+    @classmethod
+    def create(cls, symptom):
+        symptom = Symptom(
+            symptom=symptom,
+        )
+        db.session.add(symptom)
+        db.session.commit()
+        return symptom
+
+    @classmethod
+    def update(cls, data):
+        try:
+            symptom_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    symptom_data[key] = data[key]
+            if 'id' not in symptom_data:
+                symptom = Symptom.query.filter_by(symptom=symptom_data.get('symptom'))
+                symptom.update(symptom_data)
+            else:
+                symptom = Symptom.query.filter_by(id=symptom_data.get('id'))
+                symptom.update(symptom_data)
+            db.session.commit()
+            return Symptom.query.get(symptom_data['id']).as_dict()
+        except:
+            return None
+
+
+class Sickness(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "sickness"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    sickness = db.Column(db.String(125), nullable=False)
+
+    def __repr__(self):
+        return "<sickness '{}'>".format(self.sickness)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'sickness': self.sickness,
+        }
+
+    @classmethod
+    def create(cls, sickness):
+        sickness = Sickness(
+            sickness=sickness,
+        )
+        db.session.add(sickness)
+        db.session.commit()
+        return sickness
+
+    @classmethod
+    def update(cls, data):
+        try:
+            sickness_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    sickness_data[key] = data[key]
+            if 'id' not in sickness_data:
+                sickness = Sickness.query.filter_by(sickness=sickness_data.get('sickness'))
+                sickness.update(sickness_data)
+            else:
+                sickness = Sickness.query.filter_by(id=sickness_data.get('id'))
+                sickness.update(sickness_data)
+            db.session.commit()
+            return Sickness.query.get(sickness_data['id']).as_dict()
+        except:
+            return None
+
+
+class Sickness_symptom(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "sickness_symptom"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    sickness_id = db.Column(db.Integer, nullable=False)
+    symptom_id = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return "<sickness_symptom '{}'>".format(self.sickness_symptom)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'sickness_id': self.sickness_id,
+            'symptom_id': self.symptom_id
+        }
+
+    @classmethod
+    def create(cls, sickness_id, symptom_id):
+        sickness_symptom = Sickness_symptom(
+            sickness_id=sickness_id,
+            symptom_id=symptom_id
+        )
+        db.session.add(sickness_symptom)
+        db.session.commit()
+        return sickness_symptom
+
+    @classmethod
+    def update(cls, data):
+        try:
+            sickness_symptom_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    sickness_symptom_data[key] = data[key]
+            if 'id' not in sickness_symptom_data:
+                sickness_symptom = Sickness_symptom.query.filter(
+                    sickness_id=sickness_symptom_data.get('sickness_id'),
+                    symptom_id=sickness_symptom_data.get('symptom_id'),
+
+                )
+                sickness_symptom.update(sickness_symptom_data)
+            else:
+                sickness_symptom = Sickness_symptom.query.filter_by(id=sickness_symptom_data.get('id'))
+                sickness_symptom.update(sickness_symptom_data)
+            db.session.commit()
+            return Sickness_symptom.query.get(sickness_symptom_data['id']).as_dict()
+        except:
+            return None
+
+
+# endregion
+
+
+# region function
+def lower_level(user):
+    # if that user level is higher than not allow to make action
+    # if current user's level is higher then return False
+    current_user = User.get(session.get('username'))
+    if level.index(current_user.role) < level.index(user.role):
+        flash('You cannot access to this user information due to higher level')
+        return True
+    return False
+
+
+# just for testing
+@app.route('/admin/showall')
+def show_all_user():
+    users = User.query.all()
+    result = []
+    for user in users:
+        result.append(user.as_dict())
+    result.append({'length': len(result)})
+    return jsonify(result)
+
+
+@app.route('/admin/drug/showall')
+def show_all_drug():
+    drugs = Drug.query.all()
+    result = []
+    for drug in drugs:
+        result.append(drug.as_dict())
+    result.append({'length': len(result)})
+    return jsonify(result)
+
+
+@app.route('/admin/drug/create_all')
+def dump_drug():
+    if len(Drug.query.all()) < 2:
+        for i in range(1, 50):
+            drug = Drug.create(
+                name='drug name ' + str(i),
+                effect='drug effect ' + str(i),
+                price=random.randint(5000, 20000)
+            )
+    return redirect('/admin/drug/showall')
+
+
+@app.route('/admin/create_all')
+def dump_admin():
+    if len(User.query.all()) < 2:
+        for i in range(1, 20):
+            if i % 2 == 0:
+                user = User.create(
+                    username='hieu24111' + str(i),
+                    fullname='fullname admin ' + str(i),
+                    mobile='0000000000',
+                    role='admin',
+                    password='hieu2411'
+                )
+            else:
+                user = User.create(
+                    username='hieu24111' + str(i),
+                    fullname='fullname admin ' + str(i),
+                    mobile='0000000000',
+                    role='moderator',
+                    password='hieu2411'
+                )
+    return redirect('/admin/showall')
+
+
+@app.route('/admin/symptom/create_all')
+def dump_symptom():
+    if len(Symptom.query.all()) < 2:
+        for i in range(1, 50):
+            drug = Symptom.create(
+                name='Symptom name ' + str(i)
+            )
+    return redirect('/admin/symptom/index')
+
+
+@app.route('/admin/current')
+def current_login():
+    username = session['username']
+    user = User.get(username=username).as_dict()
+    return jsonify(user)
+
+
+# endregion
+
+
+# region user
 @app.route('/')
 @app.route('/index')
 @app.route('/homepage')
@@ -180,6 +475,10 @@ def homepage():
     return render_template('Homepage.html')
 
 
+# endregion
+
+
+# region login, register, logout
 # can be used for user login too ... working
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -234,6 +533,22 @@ def register():
     return render_template('admin/register.html', title='Login')
 
 
+@app.route('/logout')
+@app.route('/admin/logout')
+def logout():
+    session['signed_in'] = False
+    session['username'] = None
+    # if had created another admin account then automatically delete the default admin account
+    if len(User.query.filter(User.role == 'admin').all()) > 1 and User.get('admin') is not None:
+        id = User.get('admin').id
+        User.delete(id)
+    return redirect('/index')
+
+
+# endregion
+
+
+# region admin
 @app.route('/admin/index')
 def admin_index():
     # check if signed in then show lower users list
@@ -245,19 +560,7 @@ def admin_index():
             if user.role == 'moderator':
                 data = User.query.filter(User.role == 'user' or User.role == 'moderator').all()
             return render_template('admin/index.html', users=data)
-    return redirect('homepage')
-
-
-@app.route('/logout')
-@app.route('/admin/logout')
-def logout():
-    session['signed_in'] = False
-    session['username'] = None
-    # if had created another admin account then automatically delete the default admin account
-    if len(User.query.filter(User.role == 'admin').all()) > 1 and User.get('admin') is not None:
-        id = User.get('admin').id
-        User.delete(id)
-    return redirect('/index')
+    return redirect('/homepage')
 
 
 @app.route('/admin/edit/<id>', methods=['GET', 'POST'])
@@ -315,12 +618,16 @@ def admin_delete(id):
     return render_template('admin/delete.html', data=None)
 
 
+# endregion
+
+
+# region drug
 @app.route('/admin/drug/index')
 def drug_index():
     # check if signed in then show lower users list
     if session.get('signed_in'):
         data = Drug.query.all()
-        return render_template('admin/drug/index.html', drugs=data)
+        return render_template('admin/drug/index.html', data=data)
     return redirect('homepage')
 
 
@@ -328,13 +635,10 @@ def drug_index():
 def create_drug():
     # check if signed in then show lower users list
     if session.get('signed_in'):
-        test = request.method
         if request.method == 'POST':
-            result = Drug.create(name=request.form['name'],
-                                 effect=request.form['effect'])
+            result = Drug.create(name=request.form['name'],)
             if result is not None:
                 flash('Successfully added new drug')
-                render_template('admin/drug/create.html')
         return render_template('admin/drug/create.html')
     return redirect('/admin/login')
 
@@ -350,7 +654,6 @@ def drug_details(id):
     return render_template('admin/drug/detail.html', data=None)
 
 
-
 @app.route('/admin/drug/edit/<id>', methods=['GET', 'POST'])
 def drug_edit(id):
     drug = Drug.query.get(id)
@@ -358,8 +661,8 @@ def drug_edit(id):
     if drug:
         if request.method == 'POST':
             update_data = {'id': id,
-                           'name':request.form['name'],
-                           'effect':request.form['effect']
+                           'name': request.form['name'],
+                           'effect': request.form['effect']
                            }
             Drug.update(data=update_data)
             return redirect('/admin/drug/index')
@@ -367,6 +670,7 @@ def drug_edit(id):
         return render_template('admin/drug/edit.html', data=drug.as_dict())
 
     return render_template('admin/drug/edit.html', data=None)
+
 
 @app.route('/admin/drug/delete/<id>', methods=['GET', 'POST'])
 def drug_delete(id):
@@ -384,35 +688,83 @@ def drug_delete(id):
     return render_template('admin/drug/delete.html', data=None)
 
 
-def lower_level(user):
-    # if that user level is higher than not allow to make action
-    # if current user's level is higher then return False
-    current_user = User.get(session.get('username'))
-    if level.index(current_user.role) < level.index(user.role):
-        flash('You cannot access to this user information due to higher level')
-        return True
-    return False
+# endregion
 
 
-# just for testing
-@app.route('/admin/showall')
-def show_all_user():
-    users = User.query.all()
-    result = []
-    for user in users:
-        result.append(user.as_dict())
-    result.append({'length': len(result)})
-    return jsonify(result)
+
+# region symptom
+@app.route('/admin/symptom/index')
+def symptom_index():
+    # check if signed in then show lower users list
+    if session.get('signed_in'):
+        data = Symptom.query.all()
+        return render_template('admin/symptom/index.html', data=data)
+    return redirect('homepage')
 
 
-@app.route('/admin/drug/showall')
-def show_all_drug():
-    drugs = Drug.query.all()
-    result = []
-    for drug in drugs:
-        result.append(drug.as_dict())
-    result.append({'length': len(result)})
-    return jsonify(result)
+@app.route('/admin/symptom/create', methods=['GET', 'POST'])
+def create_symptom():
+    # check if signed in then show lower users list
+    if session.get('signed_in'):
+        if request.method == 'POST':
+            result = Symptom.create(symptom=request.form['name'])
+            if result is not None:
+                flash('Successfully added new symptom')
+        return render_template('admin/symptom/create.html')
+    return redirect('/admin/login')
+
+
+@app.route('/admin/symptom/details/<id>', methods=['get', 'post'])
+def symptom_details(id):
+    # find that user by id
+    symptom = Symptom.query.get(id)
+    if symptom:
+        # in jinja use items() to unpack key and value from dict
+        return render_template('admin/symptom/detail.html', data=symptom.as_dict())
+    flash('Symptom not found')
+    return render_template('admin/symptom/detail.html', data=None)
+
+
+@app.route('/admin/symptom/edit/<id>', methods=['GET', 'POST'])
+def symptom_edit(id):
+    symptom = Symptom.query.get(id)
+
+    if symptom:
+        if request.method == 'POST':
+            update_data = {'id': id,
+                           'symptom': request.form['name'],
+                           }
+            Symptom.update(data=update_data)
+            return redirect('/admin/symptom/index')
+        # show info first
+        return render_template('admin/symptom/edit.html', data=symptom.as_dict())
+
+    return render_template('admin/symptom/edit.html', data=None)
+
+
+@app.route('/admin/symptom/delete/<id>', methods=['GET', 'POST'])
+def symptom_delete(id):
+    # won't delete, only change is_Active to False
+
+    # find user with id
+    symptom = Symptom.query.get(id)
+    if request.method == 'POST':
+        Symptom.delete(id)
+        return redirect('/admin/symptom/index')
+    if symptom:
+        return render_template('admin/symptom/delete.html', data=symptom.as_dict())
+    # need some more code for confirmation
+
+    return render_template('admin/symptom/delete.html', data=None)
+
+
+# endregion
+
+
+# region patient
+
+
+# endregion
 
 
 db.create_all()

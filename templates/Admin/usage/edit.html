@@ -1,0 +1,47 @@
+{% extends 'admin/layout_admin.html' %}
+{% block content %}
+    <h2>title</h2>
+    <div class="row">
+        <div class="col-md-8">
+            {% if data is not none %}
+                <form action="{{ url_for('drug_edit', id =data.id) }}" method="post">
+
+                    <h4>Edit account.</h4>
+                    <hr/>
+
+                    <dl class="row">
+                        <dt class="col-sm-3">Drug name</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
+                                   value="{{ data.name }}">
+                        </div>
+
+
+                        <dt class="col-sm-3">Effects</dt>
+                        <div class="form-group col-sm-7">
+                            <input type="text" class="form-control" name="effect" aria-describedby="emailHelp"
+                                   value="{{ data.effect }}">
+                        </div>
+                    </dl>
+{#                    <div class="form-group">#}
+{#                        <input type="hidden" class="form-control" name="id" aria-describedby="emailHelp"#}
+{#                               value="{{ data.id }}">#}
+{#                    </div>#}
+
+
+                    <button type="submit" class="btn btn-default btn-success">
+                        Edit
+                    </button>
+                    <a href="{{ url_for('drug_index') }}" class="btn btn-default">
+                        Back
+                    </a>
+                </form>
+            {% else %}
+                <a href="{{ url_for('drug_index') }}" class="btn btn-default">
+                    Back
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+{% endblock %}

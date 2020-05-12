@@ -1,0 +1,52 @@
+﻿{% extends "admin/layout_admin.html" %}
+{% block content %}
+
+    <h2>Index</h2>
+
+    <p>
+        <a href="{{ url_for('create_symptom' ) }}">Add new Symptom</a>
+    </p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>
+                Name
+            </th>
+
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for symptom in data %}
+            <tr>
+                <td>
+                    {{ symptom.id }}
+                </td>
+                <td>
+                    {{ symptom.symptom }}
+                </td>
+
+                <td>
+                    <a href="{{ url_for('symptom_edit', id = symptom.id) }}">Edit</a> |
+                    <a href="{{ url_for('symptom_details', id = symptom.id) }}">Detail</a> |
+                    <a href="{{ url_for('symptom_delete', id = symptom.id) }}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+
+    {#   <form action="/action_page.php">#}
+    {#  <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">#}
+    {#  <label for="vehicle1"> I have a bike</label><br>#}
+    {#  <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">#}
+    {#  <label for="vehicle2"> I have a car</label><br>#}
+    {#  <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">#}
+    {#  <label for="vehicle3"> I have a boat</label><br><br>#}
+    {#  <input type="submit" value="Submit">#}
+    {#</form>#}
+
+{% endblock %}
