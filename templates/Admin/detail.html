@@ -31,13 +31,13 @@
 
             </div>
             <div>
-                <a href="{{ url_for('admin_edit', id = data.id) }}">Edit</a>
+                <a href="{{ url_for('admin_route.admin_edit', id = data.id) }}">Edit</a>
                 |
-                <a href="{{ url_for('admin_index') }}">Back to List</a>
+                <a href="{{ url_for('admin_route.admin_index') }}">Back to List</a>
 
             </div>
         {% else %}
-            <a href="{{ url_for('admin_index') }}">Back to List</a>
+            <a href="{{ url_for('admin_route.admin_index') }}">Back to List</a>
         {% endif %}
 
 {% endblock %}

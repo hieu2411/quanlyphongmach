@@ -1,0 +1,45 @@
+﻿{% extends "admin/layout_admin.html" %}
+{% block content %}
+
+    <h2>Index</h2>
+
+    <p>
+        <a href="{{ url_for('medical_bill_route.create_medical_bill' ) }}">Add new Medical bill</a>
+    </p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Patient name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Sickness</th>
+            <th>Symptoms</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if data is not none %}
+            {% for medical_bill in data %}
+                <tr>
+                    <td>{{ medical_bill.id }}</td>
+                    <td>{{ medical_bill.name }}</td>
+                    <td>{{ medical_bill.phone }}</td>
+                    <td>{{ medical_bill.address }}</td>
+                    <td>{{ medical_bill.sickness }}</td>
+                    <td>{{ medical_bill.symptoms }}</td>
+                    <td>
+{#                        <a href="{{ url_for('medical_bill_route.medical_bill_edit', id = medical_bill.id) }}">Edit</a> |#}
+                        <a href="{{ url_for('medical_bill_route.medical_bill_details', id = medical_bill.id) }}">Detail</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+
+        </tbody>
+    </table>
+
+
+
+
+{% endblock %}

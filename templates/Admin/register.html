@@ -14,7 +14,7 @@
             {#                {% endif %}#}
             {#            {% endwith %}#}
 
-            <form action="{{ url_for('register') }}" method="post">
+            <form action="{{ url_for('user_route.register') }}" method="post">
                 <h4>Create a new account.</h4>
                 <br>
                 <div class="form-group">
@@ -36,13 +36,15 @@
                     <input type="text" class="form-control" name="fullname" aria-describedby="emailHelp"
                            placeholder="Full name">
                 </div>
-                {% if user.role != 'user' %}
-                    <select class="form-control" name="role">
-                        {% if user.role == 'admin' %}
-                            <option value="admin">Admin</option>
-                        {% endif %}
-                        <option value="moderator">Moderator</option>
-                    </select>
+                {% if user is not none %}
+                    {% if user.role != 'user' %}
+                        <select class="form-control" name="role">
+                            {% if user.role == 'admin' %}
+                                <option value="admin">Admin</option>
+                            {% endif %}
+                            <option value="moderator">Moderator</option>
+                        </select>
+                    {% endif %}
                 {% endif %}
                 <button type="submit" class="btn btn-default btn-success">
                     Register

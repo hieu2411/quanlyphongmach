@@ -17,7 +17,7 @@
     <hr/>
     <div class="row">
         <div class="col-md-4">
-            <form action="{{ url_for('create_drug') }}" method="post">
+            <form action="{{ url_for('drug_route.create_drug') }}" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
                            placeholder="Drug name">
@@ -33,7 +33,7 @@
 
             </form>
             <div style="margin-top: 10px">
-                <a href="{{ url_for('drug_index') }}">Back to List</a>
+                <a href="{{ url_for('drug_route.drug_index') }}">Back to List</a>
             </div>
         </div>
 

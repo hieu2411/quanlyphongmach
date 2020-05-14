@@ -17,7 +17,7 @@
     <hr/>
     <div class="row">
         <div class="col-md-4">
-            <form action="{{ url_for('create_symptom') }}" method="post">
+            <form action="{{ url_for('symptom_route.create_symptom') }}" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
                            placeholder="Symptom">
@@ -30,7 +30,7 @@
 
             </form>
             <div style="margin-top: 10px">
-                <a href="{{ url_for('symptom_index') }}">Back to List</a>
+                <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
             </div>
         </div>
 

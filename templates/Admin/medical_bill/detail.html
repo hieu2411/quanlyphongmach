@@ -29,13 +29,13 @@
 
             </div>
             <div>
-                <a href="{{ url_for('symptom_route.symptom_edit', id = data.id) }}">Edit</a>
+                <a href="{{ url_for('medical_bill_route.medical_bill_edit', id = data.id) }}">Edit</a>
                 |
-                <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
+                <a href="{{ url_for('medical_bill_route.medical_bill_index') }}">Back to List</a>
 
             </div>
         {% else %}
-            <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
+            <a href="{{ url_for('medical_bill_route.medical_bill_index') }}">Back to List</a>
         {% endif %}
 
 {% endblock %}

@@ -1,0 +1,50 @@
+﻿{% extends "admin/layout_admin.html" %}
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Assign Symptom</h2>
+
+    <hr/>
+    <form action="{{ url_for('symptom_route.symptom_assign') }}" method="post">
+        <div class="row">
+
+            <div class="col-md-5">
+                <h3 style="color: #0b7bb5">Select Sickness</h3>
+                <select style="margin-top: 10px" class="form-control col-md-10" name="sickness">
+                    {% for sickness in sicknesses %}
+                        <option value="{{ sickness.id }}">{{ sickness.sickness }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-5">
+                <h3 style="color: #0b7bb5">Pick Symptoms</h3>
+                <div style="height:10px"></div>
+                {% for symptom in symptoms %}
+                    <input type="checkbox" name="symptom" value="{{ symptom.id }}">
+                    <label for="{{ symptom.id }}">{{ symptom.symptom }}</label><br>
+
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-default btn-success">
+            Assign Symptoms
+        </button>
+        |
+        <a href="{{ url_for('sickness_route.sickness_index') }}">Back to List</a>
+
+    </form>
+
+
+
+{% endblock %}

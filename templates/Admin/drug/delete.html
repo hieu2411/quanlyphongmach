@@ -23,9 +23,9 @@
                 {% endfor %}
             {% endif %}
         </div>
-        <form action="{{ url_for('drug_delete', id = data.id) }}" method="POST">
+        <form action="{{ url_for('drug_route.drug_delete', id = data.id) }}" method="POST">
             <input type="submit" value="Delete" class="btn btn-danger"/> |
-            <a href="{{ url_for('drug_index') }}">Back to List</a>
+            <a href="{{ url_for('drug_route.drug_index') }}">Back to List</a>
         </form>
     </div>
 

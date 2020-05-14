@@ -4,16 +4,16 @@
     <div class="row">
         <div class="col-md-8">
             {% if data is not none %}
-                <form action="{{ url_for('symptom_route.symptom_edit', id =data.id) }}" method="post">
+                <form action="{{ url_for('medical_bill_route.medical_bill_edit', id =data.id) }}" method="post">
 
-                    <h4>Edit Symptom.</h4>
+                    <h4>Edit Usage.</h4>
                     <hr/>
 
                     <dl class="row">
-                        <dt class="col-sm-3">Symptom</dt>
+                        <dt class="col-sm-3">Usage</dt>
                         <div class="form-group col-sm-7">
                             <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
-                                   value="{{ data.symptom }}">
+                                   value="{{ data.medical_bill }}">
                         </div>
 
 
@@ -24,12 +24,12 @@
                     <button type="submit" class="btn btn-default btn-success">
                         Edit
                     </button>
-                    <a href="{{ url_for('symptom_route.symptom_index') }}" class="btn btn-default">
+                    <a href="{{ url_for('medical_bill_route.medical_bill_index') }}" class="btn btn-default">
                         Back
                     </a>
                 </form>
             {% else %}
-                <a href="{{ url_for('symptom_route.symptom_index') }}" class="btn btn-default">
+                <a href="{{ url_for('medical_bill_route.medical_bill_index') }}" class="btn btn-default">
                     Back
                 </a>
             {% endif %}
