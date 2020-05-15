@@ -6,19 +6,19 @@
             {% if data is not none %}
                 <form action="{{ url_for('medical_bill_route.medical_bill_edit', id =data.id) }}" method="post">
 
-                    <h4>Edit Usage.</h4>
+                    <h4>Edit Medical Bill.</h4>
                     <hr/>
 
-                    <dl class="row">
-                        <dt class="col-sm-3">Usage</dt>
-                        <div class="form-group col-sm-7">
-                            <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
-                                   value="{{ data.medical_bill }}">
-                        </div>
+                    {% for key, value in data %}
+                        <dl class="row">
+                            <dt class="col-sm-3">Medical</dt>
+                            <div class="form-group col-sm-7">
+                                <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
+                                       value="{{ data.medical_bill }}">
+                            </div>
+                        </dl>
 
-
-
-                    </dl>
+                    {% endfor %}
 
 
                     <button type="submit" class="btn btn-default btn-success">
