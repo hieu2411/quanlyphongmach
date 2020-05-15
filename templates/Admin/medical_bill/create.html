@@ -18,17 +18,29 @@
     <div class="row">
         <div class="col-md-12">
             <form action="{{ url_for('medical_bill_route.create_medical_bill') }}" method="post">
-                <div class="row">
+                <div class="form-group row col-md-5">
 
-                    <div class="form-group col-md-4">
-                        <input type="text" class="form-control" name="username" aria-describedby="emailHelp"
-                               placeholder="Patient Username">
-                    </div>
-                    <button type="submit">Search</button>
+                    <select class="form-control col-md-10" name="patient">
+                        <option selected value="">Select patient</option>
+                        {% if patients is not none %}
+                            {% for s_patient in patients %}
+                                {% if s_patient.id == patient.id %}
+                                    <option selected value="{{ s_patient.id }}">{{ s_patient.name }} -
+                                        SDT: {{ s_patient.phone }}</option>
+                                {% else %}
+                                    <option value="{{ s_patient.id }}">{{ s_patient.name }} -
+                                        SDT: {{ s_patient.phone }}</option>
+
+                                {% endif %}
+
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <button type="submit" style="margin-left: 10px">Search</button>
                 </div>
 
                 <div class="form-group row col-md-4">
-                    <input type="text" class="form-control" name="name" aria-describedby="emailHelp"
+                    <input type="text" class="form-control" name="name" aria-describedby="emailHelp" disabled
                            placeholder="Patient Name"
                             {% if patient is not none %}
                            value="{{ patient.name }}"
@@ -37,20 +49,28 @@
                 </div>
 
                 <div class="form-group row col-md-4">
-                    <input type="text" class="form-control" name="phone" aria-describedby="emailHelp"
-                           placeholder="Phone Number">
+                    <input type="text" class="form-control" name="phone" aria-describedby="emailHelp" disabled
+                           placeholder="Phone Number"
+                            {% if patient is not none %}
+                           value="{{ patient.phone }}"
+                            {% endif %}>
                 </div>
 
                 <div class="form-group row col-md-4">
-                    <input type="text" class="form-control" name="address" aria-describedby="emailHelp"
-                           placeholder="Address">
+                    <input type="text" class="form-control" name="address" aria-describedby="emailHelp" disabled
+                           placeholder="Address"
+                            {% if patient is not none %}
+                           value="{{ patient.address }}"
+                            {% endif %}>
                 </div>
 
 
                 <div class="form-group row col-md-4">
                     <input type="text" class="form-control" name="new_sickness" aria-describedby="emailHelp"
                            placeholder="New Sickness">
-                    <select style="margin-top: 10px" class="form-control col-md-4" name="sickness">
+                    <select style="margin-top: 10px" class="form-control col-md-5" name="sickness">
+                        <option selected value="">Select sickness</option>
+
                         {% if sicknesses is not none %}
                             {% for sickness in sicknesses %}
                                 <option value="{{ sickness.id }}">{{ sickness.sickness }}</option>
@@ -71,26 +91,37 @@
                     {% endif %}
                 </div>
 
-                <h4>Drugs</h4>                    {% for i in range(10) %}
+                <h4>Drugs</h4>
+                {% for i in range(1, 11) %}
 
-                <div class="row col-md-8">
-                    <h4 style="margin-top: 10px; width: 20px">1. </h4>
-                    <select class="form-control col-md-3" name="drug">
-                        <option  selected></option>
+                    <div class="row col-md-8">
+                        <h4 style="margin-top: 10px; width: 20px">{{ i }}.</h4>
+                        <select class="form-control col-md-3" name="drug">
+                            <option selected value="">Drug name</option>
 
-                        {% if drugs is not none %}
-                            {% for drug in drugs %}
-                                <option value="{{ drug.id }}">{{ drug.name }}</option>
-                            {% endfor %}
-                        {% endif %}
-                    </select>
+                            {% if drugs is not none %}
+                                {% for drug in drugs %}
+                                    <option value="{{ drug.id }}">{{ drug.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
 
-                    <div class="form-group row col-md-2">
-                        <input type="text" class="form-control" name="quantity" aria-describedby="emailHelp"
-                               placeholder="Qty">
+                        <div class="form-group row col-md-2">
+                            <input type="text" class="form-control" name="quantity" aria-describedby="emailHelp"
+                                   placeholder="Qty">
+                        </div>
+
+                        <select class="form-control col-md-4" name="usage">
+                            <option selected value="">Usage</option>
+
+                            {% if usages is not none %}
+                                {% for usage in usages %}
+                                    <option value="{{ usage.usage }}">{{ usage.usage }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
                 <br>
                 <button type="submit" class="btn btn-default btn-success">
                     Add

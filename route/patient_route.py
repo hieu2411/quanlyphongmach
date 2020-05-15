@@ -1,6 +1,6 @@
-import app
 from flask import *
-from app import  Symptom,  Sickness, Sickness_symptom, Patient
+
+from app import Patient
 
 patient_route = Blueprint('patient_route', __name__)
 
@@ -19,10 +19,32 @@ def create_patient():
     # check if signed in then show lower users list
     if session.get('signed_in'):
         if request.method == 'POST':
-            result = Patient.create(name=request.form['name'],)
+            result = Patient.create(name=request.form['name'],
+                                    phone=request.form['phone'],
+                                    address=request.form['address'], )
             if result is not None:
                 flash('Successfully added new patient')
         return render_template('admin/patient/create.html')
+    return redirect('/admin/login')
+
+
+@patient_route.route('/admin/patient/edit/<id>', methods=['GET', 'POST'])
+def patient_edit(id):
+    if session.get('signed_in'):
+        patient = Patient.query.get(id)
+        if patient:
+            if request.method == 'POST':
+                update_data = {'id': id,
+                               'name': request.form['name'],
+                               'phone': request.form['phone'],
+                               'address': request.form['address']
+                               }
+                Patient.update(data=update_data)
+                return redirect('/admin/patient/index')
+            # show info first
+            return render_template('admin/patient/edit.html', data=patient.as_dict())
+        flash('Patient not found')
+        return render_template('admin/patient/edit.html', data=None)
     return redirect('/admin/login')
 
 
@@ -38,11 +60,3 @@ def patient_details(id):
         flash('Patient not found')
         return render_template('admin/patient/detail.html', data=None)
     return redirect('/admin/login')
-
-
-
-
-
-
-
-

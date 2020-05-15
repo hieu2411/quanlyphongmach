@@ -4,41 +4,43 @@
     <h2>Index</h2>
 
     <p>
-        <a href="{{ url_for('patient_route.create_patient' ) }}">Add new Patient</a>
+        <a href="{{ url_for('patient_route.create_patient' ) }}">Add new Schedule</a>
     </p>
     <table class="table">
         <thead>
         <tr>
             <th>Id</th>
-            <th>Username</th>
-            <th>Name</th>
+            <th>Patient name</th>
             <th>Phone</th>
+            <th>Address</th>
+            <th>Examination date</th>
+
+
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
-        {% for patient in data %}
-            <tr>
-                <td>{{ patient.id }}</td>
-                <td>{{ patient.account_id }}</td>
-                <td>{{ patient.name }}</td>
-                <td>{{ patient.phone }}</td>
-                <td>{{ patient.address }}</td>
+        {% if data is not none %}
+            {% for patient in data %}
+                <tr>
+                    <td>{{ patient.id }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.phone }}</td>
+                    <td>{{ patient.address }}</td>
+                    <td>{{ patient.examination_date }}</td>
 
-            </tr>
-        {% endfor %}
+                    <td>
+                        <a href="{{ url_for('patient_route.patient_edit', id = patient.id) }}">Edit</a> |
+                        <a href="{{ url_for('patient_route.patient_details', id = patient.id) }}">Detail</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
 
         </tbody>
     </table>
 
 
-    {#   <form action="/action_page.php">#}
-    {#  <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">#}
-    {#  <label for="vehicle1"> I have a bike</label><br>#}
-    {#  <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">#}
-    {#  <label for="vehicle2"> I have a car</label><br>#}
-    {#  <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">#}
-    {#  <label for="vehicle3"> I have a boat</label><br><br>#}
-    {#  <input type="submit" value="Submit">#}
-    {#</form>#}
+
 
 {% endblock %}

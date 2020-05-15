@@ -1,7 +1,7 @@
-from flask import *
-from flask_sqlalchemy import SQLAlchemy
 import datetime
 
+from flask import *
+from flask_sqlalchemy import SQLAlchemy
 
 # import route
 
@@ -10,7 +10,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///phongmach.db'
 db = SQLAlchemy(app)
-
 
 
 class User(db.Model):
@@ -51,7 +50,7 @@ class User(db.Model):
     def get(cls, username):
         if username == None:
             return None
-        user = User.query.filter(User.username == username or User.email == username).first()
+        user = User.query.filter(User.username == username).first()
         if user is not None:
             return user
         return None
@@ -124,7 +123,8 @@ class Drug(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(125), nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    price_in = db.Column(db.Float, nullable=False)
+    price_out = db.Column(db.Float, nullable=False)
     effect = db.Column(db.String(125))
 
     def __repr__(self):
@@ -135,15 +135,17 @@ class Drug(db.Model):
             'id': self.id,
             'name': self.name,
             'effect': self.effect
-            , 'price': self.price
+            , 'price_in': self.price_in,
+            'price_out': self.price_out
         }
 
     @classmethod
-    def create(cls, name, effect='', price=0):
+    def create(cls, name, effect='', price_in=0, price_out=0):
         drug = Drug(
             name=name,
             effect=effect
-            , price=price
+            , price_in=price_in,
+            price_out=price_out
         )
         db.session.add(drug)
         db.session.commit()
@@ -183,10 +185,10 @@ class Patient(db.Model):
     __tablename__ = "patient"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    account_id = db.Column(db.Integer, nullable=True)
     name = db.Column(db.String(125), nullable=False)
     phone = db.Column(db.String(11), nullable=True)
     address = db.Column(db.String(120), nullable=False)
+    examination_date = db.Column(db.DateTime)
 
     def __repr__(self):
         return "<patient '{}'>".format(self.name)
@@ -195,16 +197,17 @@ class Patient(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'phone':self.phone
-                    }
+            'phone': self.phone,
+            'address': self.address
+        }
 
     @classmethod
-    def create(cls, name, phone, address, account_id = None):
+    def create(cls, name, phone, address):
         patient = Patient(
-            account_id=account_id,
             name=name,
-            phone = phone,
-            address = address
+            phone=phone,
+            address=address,
+            examination_date=datetime.datetime.now()
         )
         db.session.add(patient)
         db.session.commit()
@@ -327,7 +330,7 @@ class Sickness(db.Model):
             return None
 
 
-class Sickness_symptom(db.Model):       # a sickness should have which symptoms
+class Sickness_symptom(db.Model):  # a sickness should have which symptoms
     """ User Model for storing user related details """
     __tablename__ = "sickness_symptom"
 
@@ -383,32 +386,32 @@ class Medical_bill(db.Model):
     __tablename__ = "medical_bill"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # change symptom id to symptom
     symptoms_id = db.Column(db.String(120), nullable=False)  # list of symptoms seperate by ' '
     sickness_id = db.Column(db.Integer, nullable=True)  # may add later
-    patient_id = db.Column(db.Integer, nullable=False)  # if profile haven't been created then created at the time bill is created
+    patient_id = db.Column(db.Integer,
+                           nullable=False)  # if profile haven't been created then created at the time bill is created
     examination_date = db.Column(db.DateTime)
 
-
-
     def __repr__(self):
-        return "<medical_bill '{}'>".format(self.medical_bill)
+        return "<medical_bill '{}'>".format(self.id)
 
     def as_dict(self):
         return {
             'id': self.id,
-            'symptoms_id' : self.symptoms_id,
-            'sickness_id' :self.sickness_id,
-            'patient_id' :self.patient_id,
-            'examination_date' :self.examination_date,
+            'symptoms': self.symptoms_id,
+            'sickness_id': self.sickness_id,
+            'patient_id': self.patient_id,
+            'examination_date': self.examination_date,
         }
 
     @classmethod
-    def create(cls, symptoms_id, sickness_id = None, patient_id = None):
+    def create(cls, symptoms_id, sickness_id=None, patient_id=None):
         medical_bill = Medical_bill(
-            symptoms_id = symptoms_id,
-            sickness_id = sickness_id,
-            patient_id = patient_id,
-            examination_date= datetime.datetime.now()
+            symptoms_id=symptoms_id,
+            sickness_id=sickness_id,
+            patient_id=patient_id,
+            examination_date=datetime.datetime.now()
         )
         db.session.add(medical_bill)
         db.session.commit()
@@ -440,30 +443,28 @@ class Medical_details(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     bill_id = db.Column(db.Integer, nullable=False)
     drug_id = db.Column(db.Integer)
-    quantity =  db.Column(db.Integer)
-    usage_id = db.Column(db.Integer)
-
-
+    quantity = db.Column(db.Integer)
+    usage = db.Column(db.String(120))
 
     def __repr__(self):
-        return "<medical_details '{}'>".format(self.medical_details)
+        return "<medical_details '{}'>".format(self.id)
 
     def as_dict(self):
         return {
             'id': self.id,
             'bill_id': self.bill_id,
-            'drug_id' :self.drug_id,
-            'quantity' :self.quantity,
-            'usage_id' :self.usage_id,
+            'drug_id': self.drug_id,
+            'quantity': self.quantity,
+            'usage': self.usage,
         }
 
     @classmethod
-    def create(cls, bill_id, drug_id = None, quantity  = 0, usage_id = None):
+    def create(cls, bill_id, drug_id=None, quantity=0, usage=None):
         medical_details = Medical_details(
-            bill_id =bill_id,
-            drug_id = drug_id,
-            quantity = quantity,
-            usage_id = usage_id
+            bill_id=bill_id,
+            drug_id=drug_id,
+            quantity=quantity,
+            usage=usage
         )
         db.session.add(medical_details)
         db.session.commit()
@@ -530,6 +531,106 @@ class Usage(db.Model):
         except:
             return None
 
+class Receipt(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "receipt"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    medical_bill_id = db.Column(db.Integer, nullable=False)
+    fee = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return "<receipt '{}'>".format(self.id)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'medical_bill_id': self.medical_bill_id,
+            'fee':self.fee
+        }
+
+    @classmethod
+    def create(cls, medical_bill_id, fee = 50000):
+        receipt = Receipt(
+            medical_bill_id = medical_bill_id,
+            fee = fee
+        )
+        db.session.add(receipt)
+        db.session.commit()
+        return receipt
+
+    @classmethod
+    def update(cls, data):
+        try:
+            receipt_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    receipt_data[key] = data[key]
+            if 'id' not in receipt_data:
+                receipt = Receipt.query.filter_by(receipt=receipt_data.get('medical_bill_id'))
+                receipt.update(receipt_data)
+            else:
+                receipt = Receipt.query.filter_by(id=receipt_data.get('id'))
+                receipt.update(receipt_data)
+            db.session.commit()
+            return Receipt.query.get(receipt_data['id']).as_dict()
+        except:
+            return None
+
+
+class Statistic(db.Model):
+    """ User Model for storing user related details """
+    __tablename__ = "statistic"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.DateTime)
+    drug_id = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+    profit = db.Column(db.Float)
+
+    def __repr__(self):
+        return "<statistic '{}'>".format(self.id)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'drug_id': self.drug_id,
+            'quantity': self.quantity,
+            'profit': self.profit,
+            'date': self.date
+        }
+
+    @classmethod
+    def create(cls, drug_id, qty):
+        drug = Drug.query.get(drug_id).as_dict()
+        statistic = Statistic(
+            drug_id=drug_id,
+            quantity=qty,
+            profit=(float(drug['price_out']) - float(drug['price_in'])) * int(qty),
+            date=datetime.datetime.now()
+        )
+        db.session.add(statistic)
+        db.session.commit()
+        return statistic
+
+    @classmethod
+    def update(cls, data):
+        try:
+            statistic_data = {}
+            for key in data:
+                if hasattr(cls, key):
+                    statistic_data[key] = data[key]
+            if 'id' not in statistic_data:
+                return None
+            else:
+                statistic = Statistic.query.filter_by(id=statistic_data.get('id'))
+                statistic.update(statistic_data)
+            db.session.commit()
+            return Statistic.query.get(statistic_data['id']).as_dict()
+        except:
+            return None
+
+
 from route.symptom_route import symptom_route
 from route.sickness_route import sickness_route
 from route.user_route import user_route
@@ -549,8 +650,6 @@ app.register_blueprint(drug_route)
 app.register_blueprint(usage_route)
 app.register_blueprint(medical_bill_route)
 app.register_blueprint(patient_route)
-
-
 
 db.create_all()
 if __name__ == '__main__':

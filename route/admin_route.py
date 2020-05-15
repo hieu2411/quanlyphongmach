@@ -76,6 +76,7 @@ def admin_delete(id):
 
 @admin_route.route('/manage')
 @admin_route.route('/admin')
+@admin_route.route('/admin/')
 def manage():
     if session.get('signed_in'):
         return render_template('admin/manage.html')

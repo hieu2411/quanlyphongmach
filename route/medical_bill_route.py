@@ -1,6 +1,6 @@
 from flask import *
 
-from app import Medical_bill, Sickness, Symptom, Patient, User, Drug
+from app import Medical_bill, Sickness, Symptom, Patient, Drug, Medical_details, Usage, Statistic
 
 medical_bill_route = Blueprint('medical_bill_route', __name__)
 
@@ -28,64 +28,84 @@ def medical_bill_index():
     return redirect('/admin/login')
 
 
-# @medical_bill_route.route('/admin/medical_bill/search_patient', methods = ['POST', 'GET'])
-# def patient_search():
-#     # check if signed in then show lower users list
-#     if session.get('signed_in'):
-#         if request.method == 'POST':
-#             username = request.form['username']
-#             user = User.query.get(request.form['username']).first()
-#             patient = Patient.query.filter(Patient.account_id == User.query.get(request.form['username'])).first()
-#             if patient:
-#                 return render_template('admin/medical_bill/create.html', patient=patient)
-#         return render_template('admin/medical_bill/create.html', patient=None)
-#     return redirect('/admin/login')
-
-
 @medical_bill_route.route('/admin/medical_bill/create', methods=['GET', 'POST'])
 def create_medical_bill():
     # check if signed in then show lower users list
     if session.get('signed_in'):
+        patients = Patient.query.all()
+        patient = None
         if request.method == 'POST':
-            patient = None
-            # search patient information if have registered before
+            # patient selected
 
-            drugs = request.form.getlist('drug')
-            qty = request.form.getlist('quantity')
+            if request.form['new_sickness'] != '' or request.form['sickness'] != '' or request.form['symptom'] != '' or request.form['drug'] != '':
+                patient_id = request.form['patient']
+                symptoms = ''
+                for symptom in request.form.getlist('symptom'):
+                    if symptoms != '':
+                        symptoms += ', '
+                    symptoms += symptom
 
-            if request.form['name'] == '' or request.form['phone'] == '' or request.form['address'] == '' and \
-                    request.form['username'] != '':
-                patient = Patient.query.filter(
-                    Patient.account_id == User.query.filter(
-                        User.username == request.form['username']).first().id).first()
+                data = []
+                for drug in request.form.getlist('drug'):
+                    if drug != '':
+                        temp = []
+                        temp.append(drug)
+                        data.append(temp)
+                quantity = request.form.getlist('quantity')
+                usages = request.form.getlist('usage')
+                for i in range(len(data)):
+                    qty = quantity[i]
+                    if qty != '':
+                        data[i].append(qty)
+                for i in range(len(data)):
+                    usage = usages[i]
+                    if usage != '':
+                        data[i].append(usage)
+                sickness_id = request.form['sickness']
+
+                # new sickness that haven't been declared in db
+                if request.form['new_sickness'] != '':
+                    sickness_id = Sickness.create(request.form['new_sickness']).id
+
+
+                medical_bill = Medical_bill.create(symptoms_id=symptoms,
+                                                   sickness_id=sickness_id,
+                                                   patient_id=patient_id)
+                medical_bill_id = medical_bill.id
+
+                # create medical bill detail
+                for obj in data:
+                    drug_id = obj[0]
+                    qty = obj[1]
+                    usage = obj[2]
+                    medical_bill_detail = Medical_details.create(bill_id=medical_bill_id,
+                                                                 drug_id=drug_id,
+                                                                 quantity=qty,
+                                                                 usage=usage)
+                    Statistic.create(drug_id=drug_id, qty=qty)
+
+                if medical_bill is not None:
+                    flash('Successfully added new medical_bill')
+                    # EDIT redirect to medical_bill detail [id]
+                    return redirect('/admin/medical_bill/index')
+
+            # search patient information and load it
+            if request.form['patient'] != '':
+                patient = Patient.query.get(request.form['patient'])
 
                 return render_template('admin/medical_bill/create.html', sicknesses=Sickness.query.all(),
                                        symptoms=Symptom.query.all(),
                                        drugs=Drug.query.all(),
+                                       usages=Usage.query.all(),
+                                       patients=patients,
                                        patient=patient)
-            else:  # create new patient profile
-                patient = Patient.create(name=request.form['name'],
-                                         phone=request.form['phone'],
-                                         address=request.form['address'])
-            symptom_id = ''
-            for symptom in request.form.getlist('symptom'):
-                if symptom_id != '':
-                    symptom_id += ', '
-                symptom_id += symptom
 
-            medical_bill = Medical_bill.create(symptoms_id=symptom_id,
-                                               sickness_id=request.form['sickness'],
-                                               patient_id=patient.id)
-
-            # create medical bill detail
-
-            if medical_bill is not None:
-                flash('Successfully added new medical_bill')
-                redirect('/admin/medical_bill/index')
         return render_template('admin/medical_bill/create.html', sicknesses=Sickness.query.all(),
                                symptoms=Symptom.query.all(),
-                               drugs = Drug.query.all(),
-                               patient=None)
+                               drugs=Drug.query.all(),
+                               usages=Usage.query.all(),
+                               patient=None,
+                               patients=patients)
 
     return redirect('/admin/login')
 
@@ -95,10 +115,28 @@ def medical_bill_details(id):
     if session.get('signed_in'):
 
         # find that medical_bill by id
-        medical_bill = Medical_bill.query.get(id)
+        data = None
+        medical_bill = Medical_bill.query.get(id).as_dict()
+        patient = Patient.query.get(medical_bill['patient_id']).as_dict()
+        medical_bill_details = Medical_details.query.filter(Medical_details.bill_id == medical_bill['id']).all()
+        drug_qty_usage = []
+        for medical_detail in medical_bill_details:
+            drug = Drug.query.get(medical_detail.drug_id)
+            drug_qty_usage.append({
+                'drug': drug.name + ' - số lượng: ' + str(medical_detail.quantity) + ' - ' + medical_detail.usage,
+            })
         if medical_bill:
             # in jinja use items() to unpack key and value from dict
-            return render_template('admin/medical_bill/detail.html', data=medical_bill.as_dict())
+            data = {
+                'id': medical_bill['id'],
+                'name': patient['name'],
+                'phone': patient['phone'],
+                'address': patient['address'],
+                'sickness': Sickness.query.get(medical_bill['sickness_id']).sickness,
+                'symptoms': medical_bill['symptoms'],
+                'date': medical_bill['examination_date'],
+            }
+            return render_template('admin/medical_bill/detail.html', data=data, drug_qty_usage=drug_qty_usage)
         flash('Medical_bill not found')
     return redirect('/admin/login')
 
@@ -115,6 +153,27 @@ def medical_bill_edit(id):
                 Medical_bill.update(data=update_data)
                 return redirect('/admin/medical_bill/index')
             # show info first
-            return render_template('admin/medical_bill/edit.html', data=medical_bill.as_dict())
+
+            medical_bill = Medical_bill.query.get(id).as_dict()
+            patient = Patient.query.get(medical_bill['patient_id']).as_dict()
+            medical_bill_details = Medical_details.query.filter(Medical_details.bill_id == medical_bill['id']).all()
+            drug_qty_usage = []
+            for medical_detail in medical_bill_details:
+                drug = Drug.query.get(medical_detail.drug_id)
+                drug_qty_usage.append({
+                    'drug': drug.name + ' - số lượng: ' + str(medical_detail.quantity) + ' - ' + medical_detail.usage,
+                })
+            if medical_bill:
+                # in jinja use items() to unpack key and value from dict
+                data = {
+                    'id': medical_bill['id'],
+                    'name': patient['name'],
+                    'phone': patient['phone'],
+                    'address': patient['address'],
+                    'sickness': Sickness.query.get(medical_bill['sickness_id']).sickness,
+                    'symptoms': medical_bill['symptoms'],
+                    'date': medical_bill['examination_date'],
+                }
+            return render_template('admin/medical_bill/edit.html', data=data)
         return render_template('admin/medical_bill/edit.html', data=None)
     return redirect('/admin/login')

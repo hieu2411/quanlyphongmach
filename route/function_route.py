@@ -5,7 +5,13 @@ from flask import *
 from app import Symptom, Drug, User, Sickness, Sickness_symptom, Usage, Patient
 
 function_route = Blueprint('function_route', __name__)
-level = ['user', 'moderator', 'admin']
+
+# mnurse lap ds khm , tra cuu benh nhan
+# cashier lap hoa don
+# accountant thong ke doanh thu
+# doctor lap phieu kham benh
+# admin can view all others information, but others can only see, edit their own information
+level = ['user', 'nurse', 'doctor', 'cashier', 'accountant','admin']
 
 
 def lower_level(user):
@@ -43,13 +49,14 @@ def show_all_drug():
 def dump_drug():
     if len(Drug.query.all()) < 2:
         for i in range(1, 50):
+            price_in = random.randint(5000, 20000)
             drug = Drug.create(
                 name='drug name ' + str(i),
                 effect='drug effect ' + str(i),
-                price=random.randint(5000, 20000)
+                price_in=price_in,
+                price_out = price_in + 1000
             )
-    return redirect('/admin/drug/index')
-
+        return redirect('/admin/drug/index')
 
 @function_route.route('/admin/create_all')
 def dump_admin():
@@ -73,7 +80,6 @@ def dump_admin():
                 )
     return redirect('/admin/index')
 
-
 @function_route.route('/admin/symptom/create_all')
 def dump_symptom():
     if len(Symptom.query.all()) < 2:
@@ -90,7 +96,6 @@ def dump_symptom():
             Symptom.create(symptom)
     return redirect('/admin/symptom/index')
 
-
 @function_route.route('/admin/sickness/create_all')
 def dump_sickness():
     if len(Sickness.query.all()) < 2:
@@ -104,7 +109,6 @@ def dump_sickness():
         for sickness in sicknesses:
             Sickness.create(sickness)
     return redirect('/admin/sickness/index')
-
 
 @function_route.route('/admin/usage/create_all')
 def dump_usage():
@@ -127,14 +131,15 @@ def dump_usage():
 @function_route.route('/admin/patient/create_all')
 def dump_patient():
     if len(Patient.query.all()) < 2:
-        for i in range (10):
-            user = User.create(username = 'patient000' + str(i),
+        for i in range(10):
+            user = User.create(username='patient000' + str(i),
                                fullname='Patient no ' + str(i),
                                password='hieu2411',
                                role='user',
-                               mobile= '012345678'
+                               mobile='012345678'
                                )
-            patient = Patient.create(account_id = user.id,name = user.fullname, phone=user.mobile, address = user.fullname + ' address')
+            patient = Patient.create(account_id=user.id, name=user.fullname, phone=user.mobile,
+                                     address=user.fullname + ' address')
     return redirect('/admin/patient/index')
 
 @function_route.route('/admin/sickness_symptom/showall')
@@ -154,7 +159,6 @@ def sickness_symptom_show():
             })
     return jsonify(result)
 
-
 @function_route.route('/admin/current')
 def current_login():
     username = session['username']
@@ -162,3 +166,56 @@ def current_login():
     if user:
         return jsonify(user.as_dict())
     return 'None'
+
+@function_route.route('/admin/dump_all')
+def dump_all():
+    if len(Drug.query.all()) < 2:
+        for i in range(1, 50):
+            price_in = random.randint(5000, 20000)
+            drug = Drug.create(
+                name='drug name ' + str(i),
+                effect='drug effect ' + str(i),
+                price_in=price_in,
+                price_out=price_in + 1000
+            )
+
+    if len(Symptom.query.all()) < 2:
+        symptoms = [
+            'Ho',
+            'Sốt',
+            'Nhức đầu',
+            'Sổ mũi',
+            'Đau bụng',
+            'Đau ngực',
+            'Khó thở'
+        ]
+        for symptom in symptoms:
+            Symptom.create(symptom)
+
+    if len(Sickness.query.all()) < 2:
+        sicknesses = [
+            'Cảm',
+            'Đau họng',
+            'Rối loạn tiêu hoá',
+            'Ung thư',
+            'Tiêu chảy',
+        ]
+        for sickness in sicknesses:
+            Sickness.create(sickness)
+
+    if len(Usage.query.all()) < 2:
+        usages = [
+            'Uống ngày 3 bữa sau khi ăn',
+            'Uống ngày 3 bữa trước khi ăn',
+            'Uống ngày 2 bữa sau khi ăn',
+            'Uống ngày 2 bữa trước khi ăn',
+            'Uống vào buổi sáng',
+            'Uống vào buổi tối',
+            'Thoa lên vết thương',
+            'Nhỏ',
+            'Tiêm',
+        ]
+        for usage in usages:
+            Usage.create(usage)
+
+    return 'done'

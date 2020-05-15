@@ -75,25 +75,25 @@ def symptom_delete(id):
 
     return redirect('/admin/login')
 
-
-@symptom_route.route('/admin/symptom/assign', methods=['GET', 'POST'])
-def symptom_assign():
-    if session.get('signed_in'):
-        if request.method == 'POST':
-            sickness_id = request.form['sickness']
-            symptoms_id = request.form.getlist('symptom')
-
-            for symptom_id in symptoms_id:
-                sickness_symptom = Sickness_symptom.create(sickness_id = sickness_id,
-                                                           symptom_id = symptom_id)
-
-        # load all sicknesses
-        sicknesses = Sickness.query.all()
-        # load all symptoms
-        symptoms = Symptom.query.all()
-        return render_template('admin/symptom/assign_symptom.html', sicknesses=sicknesses, symptoms=symptoms)
-
-    return redirect('/admin/login')
+#
+# @symptom_route.route('/admin/symptom/assign', methods=['GET', 'POST'])
+# def symptom_assign():
+#     if session.get('signed_in'):
+#         if request.method == 'POST':
+#             sickness_id = request.form['sickness']
+#             symptoms_id = request.form.getlist('symptom')
+#
+#             for symptom_id in symptoms_id:
+#                 sickness_symptom = Sickness_symptom.create(sickness_id = sickness_id,
+#                                                            symptom_id = symptom_id)
+#
+#         # load all sicknesses
+#         sicknesses = Sickness.query.all()
+#         # load all symptoms
+#         symptoms = Symptom.query.all()
+#         return render_template('admin/symptom/assign_symptom.html', sicknesses=sicknesses, symptoms=symptoms)
+#
+#     return redirect('/admin/login')
 
 @symptom_route.route('/admin/symptom/edit_assigned', methods=['GET', 'POST'])
 def edit_assigned_symptom():
