@@ -73,8 +73,8 @@ class User(db.Model):
         return user
 
     @classmethod
-    def login(cls, username, password, email=''):
-        user = User.query.filter(username == username or email == email).first()
+    def login(cls, username, password):
+        user = User.query.filter(User.username == username).first()
         if user.password == password:
             return user
         else:
@@ -286,101 +286,6 @@ class Symptom(db.Model):
             return None
 
 
-class Sickness(db.Model):
-    """ User Model for storing user related details """
-    __tablename__ = "sickness"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    sickness = db.Column(db.String(125), nullable=False)
-
-    def __repr__(self):
-        return "<sickness '{}'>".format(self.sickness)
-
-    def as_dict(self):
-        return {
-            'id': self.id,
-            'sickness': self.sickness,
-        }
-
-    @classmethod
-    def create(cls, sickness):
-        sickness = Sickness(
-            sickness=sickness,
-        )
-        db.session.add(sickness)
-        db.session.commit()
-        return sickness
-
-    @classmethod
-    def update(cls, data):
-        try:
-            sickness_data = {}
-            for key in data:
-                if hasattr(cls, key):
-                    sickness_data[key] = data[key]
-            if 'id' not in sickness_data:
-                sickness = Sickness.query.filter_by(sickness=sickness_data.get('sickness'))
-                sickness.update(sickness_data)
-            else:
-                sickness = Sickness.query.filter_by(id=sickness_data.get('id'))
-                sickness.update(sickness_data)
-            db.session.commit()
-            return Sickness.query.get(sickness_data['id']).as_dict()
-        except:
-            return None
-
-
-class Sickness_symptom(db.Model):  # a sickness should have which symptoms
-    """ User Model for storing user related details """
-    __tablename__ = "sickness_symptom"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    sickness_id = db.Column(db.Integer, nullable=False)
-    symptom_id = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return "<sickness_symptom '{}'>".format(self.id)
-
-    def as_dict(self):
-        return {
-            'id': self.id,
-            'sickness_id': self.sickness_id,
-            'symptom_id': self.symptom_id
-        }
-
-    @classmethod
-    def create(cls, sickness_id, symptom_id):
-        sickness_symptom = Sickness_symptom(
-            sickness_id=sickness_id,
-            symptom_id=symptom_id
-        )
-        db.session.add(sickness_symptom)
-        db.session.commit()
-        return sickness_symptom
-
-    @classmethod
-    def update(cls, data):
-        try:
-            sickness_symptom_data = {}
-            for key in data:
-                if hasattr(cls, key):
-                    sickness_symptom_data[key] = data[key]
-            if 'id' not in sickness_symptom_data:
-                sickness_symptom = Sickness_symptom.query.filter(
-                    sickness_id=sickness_symptom_data.get('sickness_id'),
-                    symptom_id=sickness_symptom_data.get('symptom_id'),
-
-                )
-                sickness_symptom.update(sickness_symptom_data)
-            else:
-                sickness_symptom = Sickness_symptom.query.filter_by(id=sickness_symptom_data.get('id'))
-                sickness_symptom.update(sickness_symptom_data)
-            db.session.commit()
-            return Sickness_symptom.query.get(sickness_symptom_data['id']).as_dict()
-        except:
-            return None
-
-
 class Medical_bill(db.Model):
     """ User Model for storing user related details """
     __tablename__ = "medical_bill"
@@ -388,7 +293,7 @@ class Medical_bill(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # change symptom id to symptom
     symptoms_id = db.Column(db.String(120), nullable=False)  # list of symptoms seperate by ' '
-    sickness_id = db.Column(db.Integer, nullable=True)  # may add later
+    sickness = db.Column(db.Integer, nullable=True)  # may add later
     patient_id = db.Column(db.Integer,
                            nullable=False)  # if profile haven't been created then created at the time bill is created
     examination_date = db.Column(db.DateTime)
@@ -400,7 +305,7 @@ class Medical_bill(db.Model):
         return {
             'id': self.id,
             'symptoms': self.symptoms_id,
-            'sickness_id': self.sickness_id,
+            'sickness': self.sickness,
             'patient_id': self.patient_id,
             'examination_date': self.examination_date,
         }
@@ -531,6 +436,7 @@ class Usage(db.Model):
         except:
             return None
 
+
 class Receipt(db.Model):
     """ User Model for storing user related details """
     __tablename__ = "receipt"
@@ -546,14 +452,14 @@ class Receipt(db.Model):
         return {
             'id': self.id,
             'medical_bill_id': self.medical_bill_id,
-            'fee':self.fee
+            'fee': self.fee
         }
 
     @classmethod
-    def create(cls, medical_bill_id, fee = 50000):
+    def create(cls, medical_bill_id, fee=50000):
         receipt = Receipt(
-            medical_bill_id = medical_bill_id,
-            fee = fee
+            medical_bill_id=medical_bill_id,
+            fee=fee
         )
         db.session.add(receipt)
         db.session.commit()
@@ -632,7 +538,6 @@ class Statistic(db.Model):
 
 
 from route.symptom_route import symptom_route
-from route.sickness_route import sickness_route
 from route.user_route import user_route
 from route.function_route import function_route
 from route.admin_route import admin_route
@@ -643,7 +548,6 @@ from route.patient_route import patient_route
 
 app.register_blueprint(user_route)
 app.register_blueprint(symptom_route)
-app.register_blueprint(sickness_route)
 app.register_blueprint(function_route)
 app.register_blueprint(admin_route)
 app.register_blueprint(drug_route)

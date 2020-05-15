@@ -8,7 +8,7 @@
     <meta name="author" content="Hau Nguyen">
     <meta name="keywords" content="au theme template">
     <!-- Title Page-->
-    <title>Admin</title>
+    <title>{{ title }}</title>
     <!-- Fontfaces CSS-->
     <link href="{{ url_for('static', filename='admin/css/font-face.css') }}" rel="stylesheet" media="all">
     <link href="{{ url_for('static', filename='admin/vendor/font-awesome-4.7/css/font-awesome.min.css') }}"
@@ -49,23 +49,72 @@
             <nav class="navbar-sidebar">
                 <ul class="list-unstyled navbar__list">
                     <li>
-                        <h4 href="#">User management</h4>
+                        {% if role == 'admin' %}
+                            <h4 href="#">Thuốc</h4>
+                            <ul class="list-unstyled navbar__list">
+                                <li style="margin-left: 25px; margin-top: -10px">
+                                    <a style="height: 30px" href="{{ url_for('drug_route.drug_index') }}">Index</a>
+                                    <a style="height: 30px" href="{{ url_for('drug_route.create_drug') }}">Add</a>
+                                </li>
+                            </ul>
+                        {% endif %}
+
+
+                        {% if role == 'doctor' or role == 'admin' %}
+                            <br><h4 href="#">Triệu chứng</h4>
+                            <ul class="list-unstyled navbar__list">
+                                <li style="margin-left: 25px; margin-top: -10px">
+                                    <a style="height: 30px"
+                                       href="{{ url_for('symptom_route.symptom_index') }}">Index</a>
+                                    <a style="height: 30px" href="{{ url_for('symptom_route.create_symptom') }}">Add</a>
+                                </li>
+                            </ul>
+
+                            <br><h4 href="#">Phiếu khám bệnh</h4>
+                            <ul class="list-unstyled navbar__list">
+                                <li style="margin-left: 25px; margin-top: -10px">
+                                    <a style="height: 30px"
+                                       href="{{ url_for('medical_bill_route.medical_bill_index') }}">Index</a>
+                                    <a style="height: 30px"
+                                       href="{{ url_for('medical_bill_route.create_medical_bill') }}">Add</a>
+                                </li>
+                            </ul>
+                        {% endif %}
+
+                        {% if role == 'nurse'  or role == 'admin' %}
+                            <br><h4 href="#">Lịch khám bệnh</h4>
+                            <ul class="list-unstyled navbar__list">
+                                <li style="margin-left: 25px; margin-top: -10px">
+                                    <a style="height: 30px"
+                                       href="{{ url_for('patient_route.patient_index') }}">Index</a>
+                                    <a style="height: 30px" href="{{ url_for('patient_route.create_patient') }}">Add</a>
+                                </li>
+                            </ul>
+                        {% endif %}
+
+                        {% if role == 'accountant'  or role == 'admin' %}
+                            <br><h4 href="#">Thống kê</h4>
+                            <ul class="list-unstyled navbar__list">
+                                <li style="margin-left: 25px; margin-top: -10px">
+                                    <a style="height: 30px"
+                                       href="{{ url_for('patient_route.patient_index') }}">Doanh thu ngày</a>
+                                    <a style="height: 30px"
+                                       href="{{ url_for('patient_route.patient_index') }}">Lượng thuốc đã bán</a>
+                                </li>
+                            </ul>
+                        {% endif %}
+
+                        {% if role == 'cashier' %}
+                        <br><h4 href="#">Phiếu thu</h4>
                         <ul class="list-unstyled navbar__list">
                             <li style="margin-left: 25px; margin-top: -10px">
-                                <a style="height: 30px">Quản lý người dùng</a>
-                                <a style="height: 30px">Quản lý người dùng</a>
+                                <a style="height: 30px"
+                                   href="{{ url_for('patient_route.patient_index') }}">Index</a>
+                                <a style="height: 30px"
+                                   href="{{ url_for('patient_route.patient_index') }}">Lập phiếu thu</a>
                             </li>
                         </ul>
-                    </li>
-<br>
-                    <li>
-                        <h4 href="#">Clinic management</h4>
-                        <ul class="list-unstyled navbar__list">
-                            <li style="margin-left: 25px; margin-top: -10px">
-                                <a style="height: 30px">Quản lý người dùng</a>
-                                <a style="height: 30px">Quản lý người dùng</a>
-                            </li>
-                        </ul>
+                    {% endif %}
                     </li>
                 </ul>
             </nav>

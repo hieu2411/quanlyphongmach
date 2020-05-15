@@ -1,5 +1,5 @@
 from flask import *
-from app import  Symptom,  Sickness, Sickness_symptom, Drug, User
+from app import  Symptom,  Drug, User
 user_route = Blueprint('user_route', __name__)
 
 
@@ -36,23 +36,20 @@ def login():
     if request.method == 'POST':
         # check user and password, can sign in by username and email
         result = User.login(username=request.form['username'],
-                            password=request.form['password'],
-                            email=request.form['username'])
+                            password=request.form['password'])
 
         # wrong login information
         if result == None:
             flash('Incorrect username or password')
-            return render_template('admin/login.html')
+            return render_template('admin/login.html', role = session['role'],  title = 'Login')
 
         # successful
         session['signed_in'] = True
         session['username'] = result.username
+        session['role'] = result.role
         flash('You were successfully signed in')
-        if result.role =='user':
-            return redirect('/index')
-        else:
-            return redirect('/admin/index')
-    return render_template('admin/login.html')
+        return redirect('/admin/index')
+    return render_template('admin/login.html', role = session['role'], title = 'Login')
 
 
 # can be used to sign up for normal user too ... working
@@ -67,12 +64,12 @@ def register():
                     fullname=request.form['fullname'])
         # show message
         flash('You were successfully signed up, please sign in')
-        return redirect('/index')
+        return redirect('/admin/index')
     # if current logging in user's role is admin then allow to create more admin and moderator, otherwise only allow to create moderator
     if session.get('signed_in'):
         user = User.get(session.get('username'))
-        return render_template('admin/register.html', user=user)
-    return render_template('admin/register.html', title='Login', user = None)
+        return render_template('admin/register.html', user=user, role = session['role'], title = 'Register')
+    return render_template('admin/register.html', user = None, role = session['role'], title = 'Register')
 
 
 @user_route.route('/logout')
@@ -80,6 +77,7 @@ def register():
 def logout():
     session['signed_in'] = False
     session['username'] = None
+    session['role'] = None
     # if had created another admin account then automatically delete the default admin account
     if len(User.query.filter(User.role == 'admin').all()) > 1 and User.get('admin') is not None:
         id = User.get('admin').id
@@ -87,3 +85,16 @@ def logout():
     return redirect('/index')
 
 
+@user_route.route('/admin/showall')
+def all():
+    data = []
+    users = User.query.all()
+    for user in users:
+        data.append({
+            'user': user.username,
+            'password':user.password,
+            'session[username]':session['username'],
+            'session[loged_in]':session['signed_in'],
+            'session[role]':session['role']
+        })
+    return jsonify(data)

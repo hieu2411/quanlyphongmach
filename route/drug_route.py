@@ -1,6 +1,6 @@
-import app
 from flask import *
-from app import  Symptom,  Sickness, Sickness_symptom, Drug
+
+from app import Drug
 
 drug_route = Blueprint('drug_route', __name__)
 
@@ -10,7 +10,7 @@ def drug_index():
     # check if signed in then show lower users list
     if session.get('signed_in'):
         data = Drug.query.all()
-        return render_template('admin/drug/index.html', data=data)
+        return render_template('admin/drug/index.html', data=data, role=session['role'], title = 'Drug index')
     return redirect('/admin/login')
 
 
@@ -19,10 +19,10 @@ def create_drug():
     # check if signed in then show lower users list
     if session.get('signed_in'):
         if request.method == 'POST':
-            result = Drug.create(name=request.form['name'],)
+            result = Drug.create(name=request.form['name'], )
             if result is not None:
                 flash('Successfully added new drug')
-        return render_template('admin/drug/create.html')
+        return render_template('admin/drug/create.html', role=session['role'], title = 'Add drug')
     return redirect('/admin/login')
 
 
@@ -34,9 +34,9 @@ def drug_details(id):
         drug = Drug.query.get(id)
         if drug:
             # in jinja use items() to unpack key and value from dict
-            return render_template('admin/drug/detail.html', data=drug.as_dict())
+            return render_template('admin/drug/detail.html', data=drug.as_dict(), role=session['role'], title = 'Drug details')
         flash('Drug not found')
-        return render_template('admin/drug/detail.html', data=None)
+        return render_template('admin/drug/detail.html', data=None, role=session['role'], title = 'Drug details')
     return redirect('/admin/login')
 
 
@@ -55,9 +55,9 @@ def drug_edit(id):
                 Drug.update(data=update_data)
                 return redirect('/admin/drug/index')
             # show info first
-            return render_template('admin/drug/edit.html', data=drug.as_dict())
+            return render_template('admin/drug/edit.html', data=drug.as_dict(), role=session['role'], title = 'Edit drug')
 
-        return render_template('admin/drug/edit.html', data=None)
+        return render_template('admin/drug/edit.html', data=None, role=session['role'], title = 'Edit drug')
     return redirect('/admin/login')
 
 
@@ -73,15 +73,8 @@ def drug_delete(id):
             Drug.delete(id)
             return redirect('/admin/drug/index')
         if drug:
-            return render_template('admin/drug/delete.html', data=drug.as_dict())
+            return render_template('admin/drug/delete.html', data=drug.as_dict(), role=session['role'], title = 'Delete drug')
         # need some more code for confirmation
 
-        return render_template('admin/drug/delete.html', data=None)
+        return render_template('admin/drug/delete.html', data=None, role=session['role'], title = 'Delete drug')
     return redirect('/admin/login')
-
-
-
-
-
-
-

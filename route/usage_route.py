@@ -11,8 +11,8 @@ def usage_index():
     if session.get('signed_in'):
         data = Usage.query.all()
         if data:
-            return render_template('admin/usage/index.html', data=data)
-        return render_template('admin/usage/index.html', data=None)
+            return render_template('admin/usage/index.html', data=data, role=session['role'], title = 'Usage index')
+        return render_template('admin/usage/index.html', data=None, role=session['role'], title = 'Usage index')
     return redirect('/admin/login')
 
 
@@ -24,7 +24,7 @@ def create_usage():
             result = Usage.create(usage=request.form['name'])
             if result is not None:
                 flash('Successfully added new usage')
-        return render_template('admin/usage/create.html')
+        return render_template('admin/usage/create.html', role=session['role'], title = 'Add usage')
     return redirect('/admin/login')
 
 
@@ -36,7 +36,7 @@ def usage_details(id):
         usage = Usage.query.get(id)
         if usage:
             # in jinja use items() to unpack key and value from dict
-            return render_template('admin/usage/detail.html', data=usage.as_dict())
+            return render_template('admin/usage/detail.html', data=usage.as_dict(), role=session['role'], title = 'Usage details')
         flash('Usage not found')
     return redirect('/admin/login')
 
@@ -53,24 +53,6 @@ def usage_edit(id):
                 Usage.update(data=update_data)
                 return redirect('/admin/usage/index')
             # show info first
-            return render_template('admin/usage/edit.html', data=usage.as_dict())
-        return render_template('admin/usage/edit.html', data=None)
+            return render_template('admin/usage/edit.html', data=usage.as_dict(), role=session['role'], title = 'Edit usage')
+        return render_template('admin/usage/edit.html', data=None, role=session['role'], title = 'Edit usage')
     return redirect('/admin/login')
-
-#
-# @usage_route.route('/admin/usage/delete/<id>', methods=['GET', 'POST'])
-# def usage_delete(id):
-#     if session.get('signed_in'):
-#
-#         # won't delete, only change is_Active to False
-#
-#         # find user with id
-#         usage = Usage.query.get(id)
-#         if request.method == 'POST':
-#             Usage.delete(id)
-#             return redirect('/admin/usage/index')
-#         if usage:
-#             return render_template('admin/usage/delete.html', data=usage.as_dict())
-#         # need some more code for confirmation
-#
-#     return redirect('/admin/login')

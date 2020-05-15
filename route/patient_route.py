@@ -10,7 +10,7 @@ def patient_index():
     # check if signed in then show lower users list
     if session.get('signed_in'):
         data = Patient.query.all()
-        return render_template('admin/patient/index.html', data=data)
+        return render_template('admin/patient/index.html', data=data, role = session['role'], title = 'Patient index')
     return redirect('/admin/login')
 
 
@@ -24,7 +24,7 @@ def create_patient():
                                     address=request.form['address'], )
             if result is not None:
                 flash('Successfully added new patient')
-        return render_template('admin/patient/create.html')
+        return render_template('admin/patient/create.html', role = session['role'], title = 'Add patient')
     return redirect('/admin/login')
 
 
@@ -42,9 +42,9 @@ def patient_edit(id):
                 Patient.update(data=update_data)
                 return redirect('/admin/patient/index')
             # show info first
-            return render_template('admin/patient/edit.html', data=patient.as_dict())
+            return render_template('admin/patient/edit.html', data=patient.as_dict(), role = session['role'], title = 'Edit patient')
         flash('Patient not found')
-        return render_template('admin/patient/edit.html', data=None)
+        return render_template('admin/patient/edit.html', data=None, role = session['role'], title = 'Edit patient')
     return redirect('/admin/login')
 
 
@@ -56,7 +56,7 @@ def patient_details(id):
         patient = Patient.query.get(id)
         if patient:
             # in jinja use items() to unpack key and value from dict
-            return render_template('admin/patient/detail.html', data=patient.as_dict())
+            return render_template('admin/patient/detail.html', data=patient.as_dict(), role = session['role'], title = 'Patient details')
         flash('Patient not found')
-        return render_template('admin/patient/detail.html', data=None)
+        return render_template('admin/patient/detail.html', data=None, role = session['role'], title = 'Patient details')
     return redirect('/admin/login')

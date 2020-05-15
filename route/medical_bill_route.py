@@ -1,6 +1,6 @@
 from flask import *
 
-from app import Medical_bill, Sickness, Symptom, Patient, Drug, Medical_details, Usage, Statistic
+from app import Medical_bill, Symptom, Patient, Drug, Medical_details, Usage, Statistic
 
 medical_bill_route = Blueprint('medical_bill_route', __name__)
 
@@ -18,13 +18,12 @@ def medical_bill_index():
                 'name': patient.name,
                 'phone': patient.phone,
                 'address': patient.address,
-                'sickness': Sickness.query.get(medical_bill.sickness_id).sickness,
+                'sickness': medical_bill.sickness,
                 'symptoms': medical_bill.symptoms_id,
-
             })
         if data:
-            return render_template('admin/medical_bill/index.html', data=data)
-        return render_template('admin/medical_bill/index.html', data=None)
+            return render_template('admin/medical_bill/index.html', data=data, role=session['role'], title = 'Medical bill index')
+        return render_template('admin/medical_bill/index.html', data=None, role=session['role'], title = 'Medical bill index')
     return redirect('/admin/login')
 
 
@@ -37,7 +36,8 @@ def create_medical_bill():
         if request.method == 'POST':
             # patient selected
 
-            if request.form['new_sickness'] != '' or request.form['sickness'] != '' or request.form['symptom'] != '' or request.form['drug'] != '':
+            if request.form['new_sickness'] != '' or request.form['sickness'] != '' or request.form['symptom'] != '' or \
+                    request.form['drug'] != '':
                 patient_id = request.form['patient']
                 symptoms = ''
                 for symptom in request.form.getlist('symptom'):
@@ -61,15 +61,9 @@ def create_medical_bill():
                     usage = usages[i]
                     if usage != '':
                         data[i].append(usage)
-                sickness_id = request.form['sickness']
-
-                # new sickness that haven't been declared in db
-                if request.form['new_sickness'] != '':
-                    sickness_id = Sickness.create(request.form['new_sickness']).id
-
 
                 medical_bill = Medical_bill.create(symptoms_id=symptoms,
-                                                   sickness_id=sickness_id,
+                                                   sickness=request.form['sickness'],
                                                    patient_id=patient_id)
                 medical_bill_id = medical_bill.id
 
@@ -93,19 +87,19 @@ def create_medical_bill():
             if request.form['patient'] != '':
                 patient = Patient.query.get(request.form['patient'])
 
-                return render_template('admin/medical_bill/create.html', sicknesses=Sickness.query.all(),
+                return render_template('admin/medical_bill/create.html',
                                        symptoms=Symptom.query.all(),
                                        drugs=Drug.query.all(),
                                        usages=Usage.query.all(),
                                        patients=patients,
-                                       patient=patient)
+                                       patient=patient, role=session['role'], title = 'Add medical bill')
 
-        return render_template('admin/medical_bill/create.html', sicknesses=Sickness.query.all(),
+        return render_template('admin/medical_bill/create.html',
                                symptoms=Symptom.query.all(),
                                drugs=Drug.query.all(),
                                usages=Usage.query.all(),
                                patient=None,
-                               patients=patients)
+                               patients=patients, role=session['role'], title = 'Add medical bill')
 
     return redirect('/admin/login')
 
@@ -132,11 +126,12 @@ def medical_bill_details(id):
                 'name': patient['name'],
                 'phone': patient['phone'],
                 'address': patient['address'],
-                'sickness': Sickness.query.get(medical_bill['sickness_id']).sickness,
+                'sickness': medical_bill['sickness'],
                 'symptoms': medical_bill['symptoms'],
                 'date': medical_bill['examination_date'],
             }
-            return render_template('admin/medical_bill/detail.html', data=data, drug_qty_usage=drug_qty_usage)
+            return render_template('admin/medical_bill/detail.html', data=data, drug_qty_usage=drug_qty_usage,
+                                   role=session['role'], title = 'Medical bill details')
         flash('Medical_bill not found')
     return redirect('/admin/login')
 
@@ -170,10 +165,10 @@ def medical_bill_edit(id):
                     'name': patient['name'],
                     'phone': patient['phone'],
                     'address': patient['address'],
-                    'sickness': Sickness.query.get(medical_bill['sickness_id']).sickness,
+                    'sickness': medical_bill['sickness'],
                     'symptoms': medical_bill['symptoms'],
                     'date': medical_bill['examination_date'],
                 }
-            return render_template('admin/medical_bill/edit.html', data=data)
-        return render_template('admin/medical_bill/edit.html', data=None)
+            return render_template('admin/medical_bill/edit.html', data=data, role=session['role'], title = 'Medical bill edit')
+        return render_template('admin/medical_bill/edit.html', data=None, role=session['role'], title = 'Medical bill edit')
     return redirect('/admin/login')

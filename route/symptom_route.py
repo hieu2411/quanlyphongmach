@@ -1,6 +1,6 @@
 from flask import *
 
-from app import Symptom, Sickness, Sickness_symptom
+from app import Symptom
 
 symptom_route = Blueprint('symptom_route', __name__)
 
@@ -11,8 +11,8 @@ def symptom_index():
     if session.get('signed_in'):
         data = Symptom.query.all()
         if data:
-            return render_template('admin/symptom/index.html', data=data)
-        return render_template('admin/symptom/index.html', data=None)
+            return render_template('admin/symptom/index.html', data=data, role=session['role'], title = 'Symptom index')
+        return render_template('admin/symptom/index.html', data=None, role=session['role'], title = 'Symptom index')
     return redirect('/admin/login')
 
 
@@ -24,7 +24,7 @@ def create_symptom():
             result = Symptom.create(symptom=request.form['name'])
             if result is not None:
                 flash('Successfully added new symptom')
-        return render_template('admin/symptom/create.html')
+        return render_template('admin/symptom/create.html', role=session['role'], title = 'Add symptom')
     return redirect('/admin/login')
 
 
@@ -36,7 +36,7 @@ def symptom_details(id):
         symptom = Symptom.query.get(id)
         if symptom:
             # in jinja use items() to unpack key and value from dict
-            return render_template('admin/symptom/detail.html', data=symptom.as_dict())
+            return render_template('admin/symptom/detail.html', data=symptom.as_dict(), role=session['role'], title = 'Symptom detail')
         flash('Symptom not found')
     return redirect('/admin/login')
 
@@ -53,8 +53,8 @@ def symptom_edit(id):
                 Symptom.update(data=update_data)
                 return redirect('/admin/symptom/index')
             # show info first
-            return render_template('admin/symptom/edit.html', data=symptom.as_dict())
-        return render_template('admin/symptom/edit.html', data=None)
+            return render_template('admin/symptom/edit.html', data=symptom.as_dict(), role=session['role'], title = 'Edit symptom')
+        return render_template('admin/symptom/edit.html', data=None, role = session['role'], title = 'Edit symptom')
     return redirect('/admin/login')
 
 
@@ -70,31 +70,7 @@ def symptom_delete(id):
             Symptom.delete(id)
             return redirect('/admin/symptom/index')
         if symptom:
-            return render_template('admin/symptom/delete.html', data=symptom.as_dict())
+            return render_template('admin/symptom/delete.html', data=symptom.as_dict(), role=session['role'], title = 'Symptom details')
         # need some more code for confirmation
 
     return redirect('/admin/login')
-
-#
-# @symptom_route.route('/admin/symptom/assign', methods=['GET', 'POST'])
-# def symptom_assign():
-#     if session.get('signed_in'):
-#         if request.method == 'POST':
-#             sickness_id = request.form['sickness']
-#             symptoms_id = request.form.getlist('symptom')
-#
-#             for symptom_id in symptoms_id:
-#                 sickness_symptom = Sickness_symptom.create(sickness_id = sickness_id,
-#                                                            symptom_id = symptom_id)
-#
-#         # load all sicknesses
-#         sicknesses = Sickness.query.all()
-#         # load all symptoms
-#         symptoms = Symptom.query.all()
-#         return render_template('admin/symptom/assign_symptom.html', sicknesses=sicknesses, symptoms=symptoms)
-#
-#     return redirect('/admin/login')
-
-@symptom_route.route('/admin/symptom/edit_assigned', methods=['GET', 'POST'])
-def edit_assigned_symptom():
-    return 'working on'

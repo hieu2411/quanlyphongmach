@@ -27,6 +27,21 @@
                             <input type="text" class="form-control" name="mobile" aria-describedby="emailHelp"
                                    value="{{ data.mobile }}">
                         </div>
+
+                        <dt class="col-sm-3">Role</dt>
+                        <div class="form-group col-sm-7">
+
+                            <select class="form-control" name="role">
+
+                                {% if role == 'admin' %}
+                                    <option value="admin">Admin</option>
+                                {% endif %}
+                                <option value="accountant">Accountant</option>
+                                <option value="cashier">Cashier</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="nurse">Nurse</option>
+                            </select>
+                        </div>
                     </dl>
 
 

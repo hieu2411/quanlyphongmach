@@ -66,17 +66,8 @@
 
 
                 <div class="form-group row col-md-4">
-                    <input type="text" class="form-control" name="new_sickness" aria-describedby="emailHelp"
+                    <input type="text" class="form-control" name="sickness" aria-describedby="emailHelp"
                            placeholder="New Sickness">
-                    <select style="margin-top: 10px" class="form-control col-md-5" name="sickness">
-                        <option selected value="">Select sickness</option>
-
-                        {% if sicknesses is not none %}
-                            {% for sickness in sicknesses %}
-                                <option value="{{ sickness.id }}">{{ sickness.sickness }}</option>
-                            {% endfor %}
-                        {% endif %}
-                    </select>
                 </div>
 
                 <h4>Symptoms</h4>

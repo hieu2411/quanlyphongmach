@@ -15,28 +15,14 @@
     <br>
 
     <div class="row" style="margin-bottom:60px">
-        {#        <div class="col-sm-3" style="height:100px">#}
-        {##}
-        {#            <a style="font-size:20px;color:brown" href="{{ url_for('patient_route.patient_index') }}"> <img#}
-        {#                    src="{{ url_for('static', filename = 'images/icon/patientlogo.png') }}" width="100px"#}
-        {#                    height="100px"/> Bệnh nhân</a>#}
-        {#        </div>#}
-        {#        <span class="col-1"></span>#}
         <div class="col-sm-3" style="height:100px">
             <a style="font-size:20px;color:brown" href="{{ url_for('patient_route.patient_index') }}">
                 <img src="{{ url_for('static', filename = 'images/icon/ListPatienLogo.png') }}" width="100px"
-                     height="100px"/> DS Bệnh nhân</a>
+                     height="100px"/> DS Khám Bệnh</a>
 
         </div>
-        <span class="col-1"></span>
-        <div class="col-sm-3" style="height:100px">
-            <a style="font-size:20px;color:brown" href="{{ url_for('medical_bill_route.medical_bill_index') }}">
-                <img src="{{ url_for('static', filename='images/icon/dsKhamBenh.png') }}" width="100px" height="100px"/>
-                DS Khám bệnh</a>
 
-        </div>
         <span class="col-1"></span>
-
         <div class="col-sm-3" style="height:100px">
             <a style="font-size:20px;color:brown" href="{{ url_for('medical_bill_route.create_medical_bill') }}">
                 <img src="{{ url_for('static', filename='images/icon/medical-records.png') }}" width="100px"
@@ -46,14 +32,13 @@
 
 
         <span class="col-1"></span>
-
         <div class="col-sm-3" style="height:100px">
             <a style="font-size:20px;color:brown">
                 <img src="{{ url_for('static', filename='images/icon/stats.png') }}" width="100px" height="100px"/> Báo
-                cáo D-Thu</a>
+                cáo Doanh Thu</a>
 
         </div>
-        <span class="col-1"></span>
+        <span class="col-md-12" style="height: 30px"></span>
         <div class="col-sm-3" style="height:100px">
             <a style="font-size:20px;color:brown">
                 <img src="{{ url_for('static', filename='images/icon/approve.png') }}" width="100px" height="100px"/>

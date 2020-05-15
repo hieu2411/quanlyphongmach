@@ -2,7 +2,7 @@ import random
 
 from flask import *
 
-from app import Symptom, Drug, User, Sickness, Sickness_symptom, Usage, Patient
+from app import Symptom, Drug, User,  Usage, Patient
 
 function_route = Blueprint('function_route', __name__)
 
@@ -11,7 +11,7 @@ function_route = Blueprint('function_route', __name__)
 # accountant thong ke doanh thu
 # doctor lap phieu kham benh
 # admin can view all others information, but others can only see, edit their own information
-level = ['user', 'nurse', 'doctor', 'cashier', 'accountant','admin']
+level = ['nurse', 'doctor', 'cashier', 'accountant','admin']
 
 
 def lower_level(user):
@@ -96,19 +96,7 @@ def dump_symptom():
             Symptom.create(symptom)
     return redirect('/admin/symptom/index')
 
-@function_route.route('/admin/sickness/create_all')
-def dump_sickness():
-    if len(Sickness.query.all()) < 2:
-        sicknesses = [
-            'Cảm',
-            'Đau họng',
-            'Rối loạn tiêu hoá',
-            'Ung thư',
-            'Tiêu chảy',
-        ]
-        for sickness in sicknesses:
-            Sickness.create(sickness)
-    return redirect('/admin/sickness/index')
+
 
 @function_route.route('/admin/usage/create_all')
 def dump_usage():
@@ -142,22 +130,7 @@ def dump_patient():
                                      address=user.fullname + ' address')
     return redirect('/admin/patient/index')
 
-@function_route.route('/admin/sickness_symptom/showall')
-def sickness_symptom_show():
-    sicknesses = Sickness.query.all()
-    result = []
-    for sickness in sicknesses:
-        data = Sickness_symptom.query.filter(Sickness_symptom.sickness_id == sickness.id).all()
-        if len(data) > 0:
-            symptoms = []
-            for symptom in data:
-                temp = Symptom.query.filter(Symptom.id == symptom.symptom_id).first()
-                symptoms.append(temp.as_dict())
-            result.append({
-                'sickness': sickness.as_dict(),
-                'symptom': symptoms
-            })
-    return jsonify(result)
+
 
 @function_route.route('/admin/current')
 def current_login():
@@ -191,17 +164,6 @@ def dump_all():
         ]
         for symptom in symptoms:
             Symptom.create(symptom)
-
-    if len(Sickness.query.all()) < 2:
-        sicknesses = [
-            'Cảm',
-            'Đau họng',
-            'Rối loạn tiêu hoá',
-            'Ung thư',
-            'Tiêu chảy',
-        ]
-        for sickness in sicknesses:
-            Sickness.create(sickness)
 
     if len(Usage.query.all()) < 2:
         usages = [
