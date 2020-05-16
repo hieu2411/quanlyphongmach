@@ -3,7 +3,7 @@ import datetime
 from dateutil import parser
 from flask import *
 
-from app import Statistic, Drug
+from app import Statistic, Drug, Receipt, Medical_bill
 from route.function_route import equal_datetime
 
 accountant_route = Blueprint('accountant_route', __name__)
@@ -23,6 +23,7 @@ def get_profit_drugs_sold_report():
     drugs = []
     profits = []
     drug_solds = Statistic.query.group_by(Statistic.date).all()
+    receipts = Receipt.query.all()
     for drug_sold in drug_solds:
         # add new day into days
         if len(days) == 0 or not_in(days, drug_sold.date):
@@ -50,13 +51,22 @@ def get_profit_drugs_sold_report():
                         'profit': drug_sold.profit
                     })
                     profits[index] += drug_sold.profit
+
+
     result = []
     for i in range(len(days)):
         result.append({
             'date': days[i],
-            'profit': str(profits[i]) + '$',
-            'drugs_sold': drugs[i]
+            'profit': profits[i],
+            'fee': 0,
+            'drugs_sold': drugs[i],
         })
+    # add examination fee to each day
+    for receipt in receipts:
+        bill = Medical_bill.query.get(receipt.medical_bill_id)
+        for day in days:
+            if equal_datetime(day, bill.examination_date):
+                result[days.index(day)]['fee'] += receipt.fee
     return result
 
 

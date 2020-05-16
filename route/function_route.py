@@ -186,6 +186,7 @@ def dump_all():
                     phone='0123456789',
                     address='address ' + str(i),
                     is_examined=False,
+                    is_received_receipt=False,
                     examination_date = datetime.datetime(2020, now.month, day)
                 )
                 db.session.add(patient)

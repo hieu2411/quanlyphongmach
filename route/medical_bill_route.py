@@ -1,9 +1,7 @@
-import datetime
-
 from flask import *
 
 from app import Medical_bill, Symptom, Patient, Drug, Medical_details, Usage, Statistic
-from route.function_route import equal_datetime
+from route.receipt_route import get_patient_of_today
 
 medical_bill_route = Blueprint('medical_bill_route', __name__)
 
@@ -36,14 +34,7 @@ def medical_bill_index():
 def create_medical_bill():
     # check if signed in then show lower users list
     if session.get('signed_in'):
-        patients = []
-        temp = Patient.query.all()
-        # filter the patient of today and haven't been examined
-        for result in temp:
-            a = result.as_dict()
-            if equal_datetime(result.examination_date, datetime.datetime.now()) and result.is_examined is False:
-            # if equal_datetime(result.examination_date, datetime.datetime(2020, 5, 15)) and result.is_examined is False:
-                patients.append(result)
+        patients = get_patient_of_today(is_examined=False)
         patient = None
         if request.method == 'POST':
             # patient selected

@@ -189,6 +189,7 @@ class Patient(db.Model):
     phone = db.Column(db.String(11), nullable=True)
     address = db.Column(db.String(120), nullable=False)
     is_examined = db.Column(db.Boolean, nullable=False)
+    is_received_receipt = db.Column(db.Boolean, nullable=False)
     examination_date = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -201,6 +202,7 @@ class Patient(db.Model):
             'phone': self.phone,
             'address': self.address,
             'is_examined': self.is_examined,
+            'is_received_receipt':self.is_received_receipt,
             'examination_date':self.examination_date
         }
 
@@ -212,6 +214,7 @@ class Patient(db.Model):
             phone=phone,
             address=address,
             is_examined=False,
+            is_received_receipt= False,
             examination_date=datetime.datetime(now.year(), now.month(), now.day(), now.hour(), now.minute(),
                                                now.second()))
         db.session.add(patient)
@@ -258,6 +261,17 @@ class Patient(db.Model):
             db.session.rollback()
             return None
 
+    @classmethod
+    def received_receipt(cls, id):
+        try:
+            patient = Patient.query.get(id)
+            if patient:
+                patient.is_received_receipt = True
+                db.session.commit()
+            return None
+        except:
+            db.session.rollback()
+            return None
 
 class Symptom(db.Model):
     """ User Model for storing user related details """
@@ -563,6 +577,7 @@ from route.usage_route import usage_route
 from route.medical_bill_route import medical_bill_route
 from route.patient_route import patient_route
 from route.accountant_route import accountant_route
+from route.receipt_route import receipt_route
 
 app.register_blueprint(user_route)
 app.register_blueprint(symptom_route)
@@ -573,6 +588,7 @@ app.register_blueprint(usage_route)
 app.register_blueprint(medical_bill_route)
 app.register_blueprint(patient_route)
 app.register_blueprint(accountant_route)
+app.register_blueprint(receipt_route)
 
 db.create_all()
 if __name__ == '__main__':

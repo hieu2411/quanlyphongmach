@@ -1,0 +1,122 @@
+﻿{% extends "admin/layout_admin.html" %}
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Create Receipt</h2>
+
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <form action="{{ url_for('receipt_route.create_receipt') }}" method="post">
+                <div class="form-group row col-md-5">
+
+                    <select class="form-control col-md-10" name="patient">
+                        <option selected value="">Select patient</option>
+                        {% if patients is not none %}
+                            {% for s_patient in patients %}
+                                {% if s_patient.id == patient.id %}
+                                    <option selected value="{{ s_patient.id }}">{{ s_patient.name }} -
+                                        SDT: {{ s_patient.phone }}</option>
+                                {% else %}
+                                    <option value="{{ s_patient.id }}">{{ s_patient.name }} -
+                                        SDT: {{ s_patient.phone }}</option>
+
+                                {% endif %}
+
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <button type="submit" style="margin-left: 10px">Search</button>
+                </div>
+
+                <div class="form-group row col-md-4">
+                    <input type="text" class="form-control" name="name" aria-describedby="emailHelp" disabled
+                           placeholder="Patient Name"
+                            {% if patient is not none %}
+                           value="{{ patient.name }}"
+                            {% endif %}
+                    >
+                </div>
+
+                <div class="form-group row col-md-4">
+                    <input type="text" class="form-control" name="phone" aria-describedby="emailHelp" disabled
+                           placeholder="Phone Number"
+                            {% if patient is not none %}
+                           value="{{ patient.phone }}"
+                            {% endif %}>
+                </div>
+
+                <div class="form-group row col-md-4">
+                    <input type="text" class="form-control" name="address" aria-describedby="emailHelp" disabled
+                           placeholder="Address"
+                            {% if patient is not none %}
+                           value="{{ patient.address }}"
+                            {% endif %}>
+                </div>
+
+
+                <div class="form-group row col-md-4">
+                    <input type="text" class="form-control" name="sickness" aria-describedby="emailHelp" disabled
+                           placeholder="Sickness"
+                           value="{{ patient.sickness }}">
+                </div>
+
+                <div class="row form-group" style="margin-left: 5px">
+                    <table class="table table-striped table-hover  col-md-8">
+                        <thead>
+                        <tr>
+                            <th>Drug</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Sum</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for drug in patient['drugs'] %}
+                            <tr>
+                                <td>{{ drug.drug }}</td>
+                                <td>{{ drug.price }}</td>
+                                <td>{{ drug.quantity }}</td>
+                                <td>{{ drug.price * drug.quantity }}</td>
+                            </tr>
+                        {% endfor %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 style="margin-left: 20px">Drug cost: {{ patient.drug_cost }} </h4>
+
+
+                <div class="form-group row col-md-4" style="margin-top: 10px">
+                    <input type="text" class="form-control" name="fee" aria-describedby="emailHelp"
+                           placeholder="Fee">
+                </div>
+
+
+                <button type="submit" class="btn btn-default btn-success">
+                    Add
+                </button>
+                <br>
+
+            </form>
+            <div style="margin-top: 10px">
+                <a href="{{ url_for('receipt_route.receipt_index') }}">Back to List</a>
+            </div>
+        </div>
+
+    </div>
+
+
+
+{% endblock %}
