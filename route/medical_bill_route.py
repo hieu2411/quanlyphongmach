@@ -1,6 +1,9 @@
+import datetime
+
 from flask import *
 
 from app import Medical_bill, Symptom, Patient, Drug, Medical_details, Usage, Statistic
+from route.function_route import equal_datetime
 
 medical_bill_route = Blueprint('medical_bill_route', __name__)
 
@@ -22,8 +25,10 @@ def medical_bill_index():
                 'symptoms': medical_bill.symptoms_id,
             })
         if data:
-            return render_template('admin/medical_bill/index.html', data=data, role=session['role'], title = 'Medical bill index')
-        return render_template('admin/medical_bill/index.html', data=None, role=session['role'], title = 'Medical bill index')
+            return render_template('admin/medical_bill/index.html', data=data, role=session['role'],
+                                   title='Medical bill index')
+        return render_template('admin/medical_bill/index.html', data=None, role=session['role'],
+                               title='Medical bill index')
     return redirect('/admin/login')
 
 
@@ -31,57 +36,65 @@ def medical_bill_index():
 def create_medical_bill():
     # check if signed in then show lower users list
     if session.get('signed_in'):
-        patients = Patient.query.all()
+        patients = []
+        temp = Patient.query.all()
+        # filter the patient of today and haven't been examined
+        for result in temp:
+            a = result.as_dict()
+            if equal_datetime(result.examination_date, datetime.datetime.now()) and result.is_examined is False:
+            # if equal_datetime(result.examination_date, datetime.datetime(2020, 5, 15)) and result.is_examined is False:
+                patients.append(result)
         patient = None
         if request.method == 'POST':
             # patient selected
 
-            if request.form['new_sickness'] != '' or request.form['sickness'] != '' or request.form['symptom'] != '' or \
-                    request.form['drug'] != '':
-                patient_id = request.form['patient']
-                symptoms = ''
-                for symptom in request.form.getlist('symptom'):
-                    if symptoms != '':
-                        symptoms += ', '
-                    symptoms += symptom
+            if request.form['sickness'] != '' and request.form['drug'] != '':
+                if request.form['symptom'] != '':
+                    patient_id = request.form['patient']
+                    symptoms = ''
+                    for symptom in request.form.getlist('symptom'):
+                        if symptoms != '':
+                            symptoms += ', '
+                        symptoms += symptom
 
-                data = []
-                for drug in request.form.getlist('drug'):
-                    if drug != '':
-                        temp = []
-                        temp.append(drug)
-                        data.append(temp)
-                quantity = request.form.getlist('quantity')
-                usages = request.form.getlist('usage')
-                for i in range(len(data)):
-                    qty = quantity[i]
-                    if qty != '':
-                        data[i].append(qty)
-                for i in range(len(data)):
-                    usage = usages[i]
-                    if usage != '':
-                        data[i].append(usage)
+                    data = []
+                    for drug in request.form.getlist('drug'):
+                        if drug != '':
+                            temp = []
+                            temp.append(drug)
+                            data.append(temp)
+                    quantity = request.form.getlist('quantity')
+                    usages = request.form.getlist('usage')
+                    for i in range(len(data)):
+                        qty = quantity[i]
+                        if qty != '':
+                            data[i].append(qty)
+                    for i in range(len(data)):
+                        usage = usages[i]
+                        if usage != '':
+                            data[i].append(usage)
 
-                medical_bill = Medical_bill.create(symptoms_id=symptoms,
-                                                   sickness=request.form['sickness'],
-                                                   patient_id=patient_id)
-                medical_bill_id = medical_bill.id
+                    medical_bill = Medical_bill.create(symptoms_id=symptoms,
+                                                       sickness=request.form['sickness'],
+                                                       patient_id=patient_id)
+                    medical_bill_id = medical_bill.id
 
-                # create medical bill detail
-                for obj in data:
-                    drug_id = obj[0]
-                    qty = obj[1]
-                    usage = obj[2]
-                    medical_bill_detail = Medical_details.create(bill_id=medical_bill_id,
-                                                                 drug_id=drug_id,
-                                                                 quantity=qty,
-                                                                 usage=usage)
-                    Statistic.create(drug_id=drug_id, qty=qty)
+                    # create medical bill detail
+                    for obj in data:
+                        drug_id = obj[0]
+                        qty = obj[1]
+                        usage = obj[2]
+                        medical_bill_detail = Medical_details.create(bill_id=medical_bill_id,
+                                                                     drug_id=drug_id,
+                                                                     quantity=qty,
+                                                                     usage=usage)
+                        Statistic.create(drug_id=drug_id, qty=qty)
+                        Patient.examined(patient_id)
 
-                if medical_bill is not None:
-                    flash('Successfully added new medical_bill')
-                    # EDIT redirect to medical_bill detail [id]
-                    return redirect('/admin/medical_bill/index')
+                    if medical_bill is not None:
+                        flash('Successfully added new medical_bill')
+                        # EDIT redirect to medical_bill detail [id]
+                        return redirect('/admin/medical_bill/index')
 
             # search patient information and load it
             if request.form['patient'] != '':
@@ -92,14 +105,14 @@ def create_medical_bill():
                                        drugs=Drug.query.all(),
                                        usages=Usage.query.all(),
                                        patients=patients,
-                                       patient=patient, role=session['role'], title = 'Add medical bill')
+                                       patient=patient, role=session['role'], title='Add medical bill')
 
         return render_template('admin/medical_bill/create.html',
                                symptoms=Symptom.query.all(),
                                drugs=Drug.query.all(),
                                usages=Usage.query.all(),
                                patient=None,
-                               patients=patients, role=session['role'], title = 'Add medical bill')
+                               patients=patients, role=session['role'], title='Add medical bill')
 
     return redirect('/admin/login')
 
@@ -131,7 +144,7 @@ def medical_bill_details(id):
                 'date': medical_bill['examination_date'],
             }
             return render_template('admin/medical_bill/detail.html', data=data, drug_qty_usage=drug_qty_usage,
-                                   role=session['role'], title = 'Medical bill details')
+                                   role=session['role'], title='Medical bill details')
         flash('Medical_bill not found')
     return redirect('/admin/login')
 
@@ -169,6 +182,8 @@ def medical_bill_edit(id):
                     'symptoms': medical_bill['symptoms'],
                     'date': medical_bill['examination_date'],
                 }
-            return render_template('admin/medical_bill/edit.html', data=data, role=session['role'], title = 'Medical bill edit')
-        return render_template('admin/medical_bill/edit.html', data=None, role=session['role'], title = 'Medical bill edit')
+            return render_template('admin/medical_bill/edit.html', data=data, role=session['role'],
+                                   title='Medical bill edit')
+        return render_template('admin/medical_bill/edit.html', data=None, role=session['role'],
+                               title='Medical bill edit')
     return redirect('/admin/login')

@@ -1,8 +1,9 @@
+import datetime
 import random
 
 from flask import *
 
-from app import Symptom, Drug, User,  Usage, Patient
+from app import Symptom, Drug, User, Usage, Patient, db, Medical_bill
 
 function_route = Blueprint('function_route', __name__)
 
@@ -11,7 +12,7 @@ function_route = Blueprint('function_route', __name__)
 # accountant thong ke doanh thu
 # doctor lap phieu kham benh
 # admin can view all others information, but others can only see, edit their own information
-level = ['nurse', 'doctor', 'cashier', 'accountant','admin']
+level = ['nurse', 'doctor', 'cashier', 'accountant', 'admin']
 
 
 def lower_level(user):
@@ -54,31 +55,10 @@ def dump_drug():
                 name='drug name ' + str(i),
                 effect='drug effect ' + str(i),
                 price_in=price_in,
-                price_out = price_in + 1000
+                price_out=price_in + 1000
             )
         return redirect('/admin/drug/index')
 
-@function_route.route('/admin/create_all')
-def dump_admin():
-    if len(User.query.all()) < 2:
-        for i in range(1, 20):
-            if i % 2 == 0:
-                user = User.create(
-                    username='hieu24111' + str(i),
-                    fullname='fullname admin ' + str(i),
-                    mobile='0000000000',
-                    role='admin',
-                    password='hieu2411'
-                )
-            else:
-                user = User.create(
-                    username='hieu24111' + str(i),
-                    fullname='fullname admin ' + str(i),
-                    mobile='0000000000',
-                    role='moderator',
-                    password='hieu2411'
-                )
-    return redirect('/admin/index')
 
 @function_route.route('/admin/symptom/create_all')
 def dump_symptom():
@@ -95,7 +75,6 @@ def dump_symptom():
         for symptom in symptoms:
             Symptom.create(symptom)
     return redirect('/admin/symptom/index')
-
 
 
 @function_route.route('/admin/usage/create_all')
@@ -116,6 +95,7 @@ def dump_usage():
             Usage.create(usage)
     return redirect('/admin/usage/index')
 
+
 @function_route.route('/admin/patient/create_all')
 def dump_patient():
     if len(Patient.query.all()) < 2:
@@ -131,7 +111,6 @@ def dump_patient():
     return redirect('/admin/patient/index')
 
 
-
 @function_route.route('/admin/current')
 def current_login():
     username = session['username']
@@ -140,10 +119,11 @@ def current_login():
         return jsonify(user.as_dict())
     return 'None'
 
+
 @function_route.route('/admin/dump_all')
 def dump_all():
     if len(Drug.query.all()) < 2:
-        for i in range(1, 50):
+        for i in range(1, 20):
             price_in = random.randint(5000, 20000)
             drug = Drug.create(
                 name='drug name ' + str(i),
@@ -180,4 +160,40 @@ def dump_all():
         for usage in usages:
             Usage.create(usage)
 
+    if len(User.query.all()) < 2:
+        User.create(username='hieu2411',
+                    password='hieu2411',
+                    fullname='ho phuoc hieu',
+                    mobile='0903171998',
+                    role='admin',
+                    email='p.hieu2411@gmail.com')
+        roles = ['nurse', 'accountant', 'doctor', 'cashier']
+        for role in roles:
+            User.create(username=role,
+                        password='hieu2411',
+                        fullname=role,
+                        mobile='0123456789',
+                        role=role,
+                        email=role + '@gmail.com')
+    if len(Patient.query.all()) < 10:
+        for day in range(1,30):
+            now = datetime.datetime.now()
+            # 2 patient for a day
+            for i in range(2):
+                db.session.remove()
+                patient = Patient(
+                    name='Patient number ' + str(now.month) + '/' +str(day),
+                    phone='0123456789',
+                    address='address ' + str(i),
+                    is_examined=False,
+                    examination_date = datetime.datetime(2020, now.month, day)
+                )
+                db.session.add(patient)
+                db.session.commit()
     return 'done'
+
+
+def equal_datetime(date1, date2):
+    if date1.day == date2.day and date1.month == date2.month and date1.year == date2.year :
+        return True
+    return False

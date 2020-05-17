@@ -1,0 +1,44 @@
+﻿{% extends "admin/layout_admin.html" %}
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    {% if data is not none %}
+        <h2>{{ data['date'].day }}-{{ data['date'].month }}-{{ data['date'].year }} Drugs sold Details</h2>
+    {% endif %}
+    <div>
+        {% if data is not none %}
+            <table class="table table-striped table-hover ">
+                <thead>
+                <tr>
+                    <th>Drug</th>
+                    <th>Price in</th>
+                    <th>Price out</th>
+                    <th>Quantity</th>
+                    <th>Profit</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for drug_sold in data['drugs_sold'] %}
+                    <tr>
+                        <td>{{ drug_sold['drug'] }}</td>
+                        <td>{{ drug_sold['price_in'] }}</td>
+                        <td>{{ drug_sold['price_out'] }}</td>
+                        <td>{{ drug_sold['quantity'] }}</td>
+                        <td>{{ drug_sold['profit'] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    <br>
+    <a href="{{ url_for('accountant_route.drugs_sold_index') }}">Back to List</a>
+
+{% endblock %}

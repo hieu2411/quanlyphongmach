@@ -188,6 +188,7 @@ class Patient(db.Model):
     name = db.Column(db.String(125), nullable=False)
     phone = db.Column(db.String(11), nullable=True)
     address = db.Column(db.String(120), nullable=False)
+    is_examined = db.Column(db.Boolean, nullable=False)
     examination_date = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -198,17 +199,21 @@ class Patient(db.Model):
             'id': self.id,
             'name': self.name,
             'phone': self.phone,
-            'address': self.address
+            'address': self.address,
+            'is_examined': self.is_examined,
+            'examination_date':self.examination_date
         }
 
     @classmethod
     def create(cls, name, phone, address):
+        now = datetime.datetime.now()
         patient = Patient(
             name=name,
             phone=phone,
             address=address,
-            examination_date=datetime.datetime.now()
-        )
+            is_examined=False,
+            examination_date=datetime.datetime(now.year(), now.month(), now.day(), now.hour(), now.minute(),
+                                               now.second()))
         db.session.add(patient)
         db.session.commit()
         return patient
@@ -239,6 +244,18 @@ class Patient(db.Model):
             db.session.commit()
             return Patient.query.get(patient_data['id']).as_dict()
         except:
+            return None
+
+    @classmethod
+    def examined(cls, id):
+        try:
+            patient = Patient.query.get(id)
+            if patient:
+                patient.is_examined = True
+                db.session.commit()
+            return None
+        except:
+            db.session.rollback()
             return None
 
 
@@ -311,10 +328,10 @@ class Medical_bill(db.Model):
         }
 
     @classmethod
-    def create(cls, symptoms_id, sickness_id=None, patient_id=None):
+    def create(cls, symptoms_id, sickness=None, patient_id=None):
         medical_bill = Medical_bill(
             symptoms_id=symptoms_id,
-            sickness_id=sickness_id,
+            sickness=sickness,
             patient_id=patient_id,
             examination_date=datetime.datetime.now()
         )
@@ -545,6 +562,7 @@ from route.drug_route import drug_route
 from route.usage_route import usage_route
 from route.medical_bill_route import medical_bill_route
 from route.patient_route import patient_route
+from route.accountant_route import accountant_route
 
 app.register_blueprint(user_route)
 app.register_blueprint(symptom_route)
@@ -554,6 +572,7 @@ app.register_blueprint(drug_route)
 app.register_blueprint(usage_route)
 app.register_blueprint(medical_bill_route)
 app.register_blueprint(patient_route)
+app.register_blueprint(accountant_route)
 
 db.create_all()
 if __name__ == '__main__':

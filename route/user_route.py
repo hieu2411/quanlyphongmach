@@ -49,7 +49,7 @@ def login():
         session['role'] = result.role
         flash('You were successfully signed in')
         return redirect('/admin/index')
-    return render_template('admin/login.html', role = session['role'], title = 'Login')
+    return render_template('admin/login.html', title = 'Login')
 
 
 # can be used to sign up for normal user too ... working

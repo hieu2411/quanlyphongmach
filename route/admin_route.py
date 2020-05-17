@@ -43,11 +43,11 @@ def admin_details(id):
         # find that user by id
         user = User.query.get(id)
         if user:
-            if lower_level(user):
+            if user.username == session['username'] or session['role'] == 'admin':
+                return render_template('admin/detail.html', data=user.as_dict(), role=session['role'], title = 'Account details')
+            else:
+                flash('Access denied')
                 return render_template('admin/detail.html', data=None, role=session['role'], title = 'Account details')
-
-            # in jinja use items() to unpack key and value from dict
-            return render_template('admin/detail.html', data=user.as_dict(), role=session['role'], title = 'Account details')
         flash('User not found')
         return render_template('admin/detail.html', data=None, role=session['role'], title = 'Account details')
     return redirect('/admin/login')

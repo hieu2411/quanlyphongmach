@@ -1,14 +1,5 @@
 ﻿{% extends "admin/layout_admin.html" %}
 {% block content %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class=flashes>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
 
     <h2>Details</h2>
 
