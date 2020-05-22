@@ -1,6 +1,7 @@
 from flask import *
 
 from app import Patient
+from route.receipt_route import get_patient_of_today
 
 patient_route = Blueprint('patient_route', __name__)
 
@@ -9,7 +10,7 @@ patient_route = Blueprint('patient_route', __name__)
 def patient_index():
     # check if signed in then show lower users list
     if session.get('signed_in'):
-        data = Patient.query.all()
+        data = get_patient_of_today()
         return render_template('admin/patient/index.html', data=data, role = session['role'], title = 'Patient index')
     return redirect('/admin/login')
 

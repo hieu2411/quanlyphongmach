@@ -2,6 +2,7 @@
 {% block content %}
 
     <h1>Delete</h1>
+    {% if role == 'admin' %}
 
     <div>
         <hr/>
@@ -28,5 +29,5 @@
             <a href="{{ url_for('drug_route.drug_index') }}">Back to List</a>
         </form>
     </div>
-
+{% endif %}
 {% endblock %}

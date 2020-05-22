@@ -1,6 +1,9 @@
 {% extends 'admin/layout_admin.html' %}
 {% block content %}
     <h2>title</h2>
+
+            {% if role == 'admin' or role =='nurse'%}
+
     <div class="row">
         <div class="col-md-8">
             {% if data is not none %}
@@ -46,4 +49,5 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
 {% endblock %}

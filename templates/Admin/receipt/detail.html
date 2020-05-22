@@ -2,6 +2,7 @@
 {% block content %}
 
     <h2>Receipt Details</h2>
+        {% if role == 'admin' or role =='nurse'%}
 
     <div class="row">
         <div class="col-md-7">
@@ -50,4 +51,5 @@
         <a href="{{ url_for('receipt_route.receipt_index') }}">Back to List</a>
 
     </div>
+    {% endif %}
 {% endblock %}

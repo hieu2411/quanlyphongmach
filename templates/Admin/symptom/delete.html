@@ -1,32 +1,33 @@
 {% extends 'admin/layout_admin.html' %}
 {% block content %}
 
-    <h1>Delete</h1>
+    <h1>Delete symptom</h1>
+    {% if role == 'admin' %}
 
-    <div>
-        <hr/>
         <div>
-            {% if data is not none %}
-                {% for key, value in data.items() %}
-                    <hr/>
-                    <dl class="row">
-                        {#            key#}
-                        <dt class="col-sm-2">
-                            {{ key }}
-                        </dt>
+            <hr/>
+            <div>
+                {% if data is not none %}
+                    {% for key, value in data.items() %}
+                        <hr/>
+                        <dl class="row">
+                            {#            key#}
+                            <dt class="col-sm-2">
+                                {{ key }}
+                            </dt>
 
-                        {#            value#}
-                        <dd class="col-sm-10">
-                            {{ value }}
-                        </dd>
-                    </dl>
-                {% endfor %}
-            {% endif %}
+                            {#            value#}
+                            <dd class="col-sm-10">
+                                {{ value }}
+                            </dd>
+                        </dl>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <form action="{{ url_for('symptom_route.symptom_delete', id = data.id) }}" method="POST">
+                <input type="submit" value="Delete" class="btn btn-danger"/> |
+                <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
+            </form>
         </div>
-        <form action="{{ url_for('symptom_route.symptom_delete', id = data.id) }}" method="POST">
-            <input type="submit" value="Delete" class="btn btn-danger"/> |
-            <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
-        </form>
-    </div>
-
+    {% endif %}
 {% endblock %}

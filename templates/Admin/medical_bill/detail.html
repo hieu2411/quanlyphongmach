@@ -2,23 +2,11 @@
 {% block content %}
 
     <h2>Details</h2>
+    {% if role == 'admin' or role =='doctor' %}
 
-    <div>
-        {% if data is not none %}
-            {% for key, value in data.items() %}
-                <hr/>
-                <dl class="row">
-                    <dt class="col-sm-2">
-                        {{ key }}
-                    </dt>
-                    <dd class="col-sm-10">
-                        {{ value }}
-                    </dd>
-                </dl>
-            {% endfor %}
-
-            {% for drug in drug_qty_usage %}
-                {% for key , value in drug.items() %}
+        <div>
+            {% if data is not none %}
+                {% for key, value in data.items() %}
                     <hr/>
                     <dl class="row">
                         <dt class="col-sm-2">
@@ -29,16 +17,29 @@
                         </dd>
                     </dl>
                 {% endfor %}
-            {% endfor %}
-            </div>
-            <div>
-                <a href="{{ url_for('medical_bill_route.medical_bill_edit', id = data.id) }}">Edit</a>
-                |
+
+                {% for drug in drug_qty_usage %}
+                    {% for key , value in drug.items() %}
+                        <hr/>
+                        <dl class="row">
+                            <dt class="col-sm-2">
+                                {{ key }}
+                            </dt>
+                            <dd class="col-sm-10">
+                                {{ value }}
+                            </dd>
+                        </dl>
+                    {% endfor %}
+                {% endfor %}
+                </div>
+                <div>
+                    <a href="{{ url_for('medical_bill_route.medical_bill_edit', id = data.id) }}">Edit</a>
+                    |
+                    <a href="{{ url_for('medical_bill_route.medical_bill_index') }}">Back to List</a>
+
+                </div>
+            {% else %}
                 <a href="{{ url_for('medical_bill_route.medical_bill_index') }}">Back to List</a>
-
-            </div>
-        {% else %}
-            <a href="{{ url_for('medical_bill_route.medical_bill_index') }}">Back to List</a>
-        {% endif %}
-
+            {% endif %}
+    {% endif %}
 {% endblock %}

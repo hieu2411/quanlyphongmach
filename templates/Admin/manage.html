@@ -33,21 +33,21 @@
 
         <span class="col-1"></span>
         <div class="col-sm-3" style="height:100px">
-            <a style="font-size:20px;color:brown">
+            <a style="font-size:20px;color:brown" href="{{ url_for('accountant_route.profit_index') }}">
                 <img src="{{ url_for('static', filename='images/icon/stats.png') }}" width="100px" height="100px"/> Báo
                 cáo Doanh Thu</a>
 
         </div>
         <span class="col-md-12" style="height: 30px"></span>
         <div class="col-sm-3" style="height:100px">
-            <a style="font-size:20px;color:brown">
+            <a style="font-size:20px;color:brown" href="{{ url_for('receipt_route.create_receipt') }}">
                 <img src="{{ url_for('static', filename='images/icon/approve.png') }}" width="100px" height="100px"/>
                 Lập Hóa đơn</a>
 
         </div>
         <span class="col-1"></span>
         <div class="col-sm-3" style="height:100px">
-            <a style="font-size:20px;color:brown;icon:url({{ url_for('static', filename='images/icon/clipboard.png') }}),"
+            <a style="font-size:20px;color:brown;icon:url({{ url_for('static', filename='images/icon/clipboard.png') }})" href="{{ url_for('drug_route.create_drug') }}"
             > <img
                     src="{{ url_for('static', filename='images/icon/syringe.png') }}"
                     width="100px" height="100px"/> Thêm thuốc...</a>

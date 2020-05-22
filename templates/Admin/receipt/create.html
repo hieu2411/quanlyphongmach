@@ -12,6 +12,7 @@
     {% endwith %}
 
     <h2>Create Receipt</h2>
+        {% if role == 'admin' or role =='nurse'%}
 
     <hr/>
     <div class="row">
@@ -117,6 +118,6 @@
 
     </div>
 
-
+{% endif %}
 
 {% endblock %}

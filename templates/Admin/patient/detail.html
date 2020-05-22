@@ -11,6 +11,7 @@
     {% endwith %}
 
     <h2>Details</h2>
+        {% if role == 'admin' or role =='nurse'%}
 
     <div>
         {% if data is not none %}
@@ -37,5 +38,5 @@
         {% else %}
             <a href="{{ url_for('patient_route.patient_index') }}">Back to List</a>
         {% endif %}
-
+{% endif %}
 {% endblock %}

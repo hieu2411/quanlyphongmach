@@ -10,32 +10,33 @@
         {% endif %}
     {% endwith %}
 
-    <h2>Details</h2>
+    <h2>Symptom details</h2>
+    {% if role == 'admin' %}
 
-    <div>
-        {% if data is not none %}
-            {% for key, value in data.items() %}
-                <hr/>
-                <dl class="row">
-                    <dt class="col-sm-2">
-                        {{ key }}
-                    </dt>
-                    <dd class="col-sm-10">
-                        {{ value }}
-                    </dd>
-                </dl>
-            {% endfor %}
+        <div>
+            {% if data is not none %}
+                {% for key, value in data.items() %}
+                    <hr/>
+                    <dl class="row">
+                        <dt class="col-sm-2">
+                            {{ key }}
+                        </dt>
+                        <dd class="col-sm-10">
+                            {{ value }}
+                        </dd>
+                    </dl>
+                {% endfor %}
 
 
-            </div>
-            <div>
-                <a href="{{ url_for('symptom_route.symptom_edit', id = data.id) }}">Edit</a>
-                |
+                </div>
+                <div>
+                    <a href="{{ url_for('symptom_route.symptom_edit', id = data.id) }}">Edit</a>
+                    |
+                    <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
+
+                </div>
+            {% else %}
                 <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
-
-            </div>
-        {% else %}
-            <a href="{{ url_for('symptom_route.symptom_index') }}">Back to List</a>
-        {% endif %}
-
+            {% endif %}
+    {% endif %}
 {% endblock %}
